@@ -1,6 +1,7 @@
 export type GameSlug =
   | 'free-fire'
   | 'cod-mobile'
+  | 'fc-26'
   | 'fc-24'
   | 'pubg-mobile'
   | 'roblox'
@@ -37,7 +38,9 @@ export interface Game {
   idPlaceholder: string;
   idFormatHint: string;
   accountIdentifierLabel?: string;
-  accountType?: 'uid' | 'zone_uid' | 'username' | 'email' | 'tag';
+  accountType?: 'uid' | 'zone_uid' | 'username' | 'email' | 'tag' | 'riot_id';
+  themeColor?: string;
+  glowColor?: string;
   requiresZoneId?: boolean;
   zonePlaceholder?: string;
   zoneFormatHint?: string;

@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { GAMES_DATA } from '../data/mockData';
-import { GameSlug } from '../types';
+import { Game, GameSlug } from '../types';
 import { sound } from '../utils/audio';
 import { useCurrency } from '../context/CurrencyContext';
 import { ChevronRight, Sparkles, Gamepad2, CreditCard, Tv, Gift, ShieldCheck } from 'lucide-react';
 
 interface ProductCatalogProps {
   onSelectGame: (gameId: GameSlug) => void;
+  onHoverGame?: (game: Game | null) => void;
 }
 
-export function ProductCatalog({ onSelectGame }: ProductCatalogProps) {
+export function ProductCatalog({ onSelectGame, onHoverGame }: ProductCatalogProps) {
   const { toProtectedBs } = useCurrency();
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'game' | 'wallet' | 'subscription' | 'giftcard'>('all');
   const [showFullCatalog, setShowFullCatalog] = useState(false);
@@ -92,6 +93,8 @@ export function ProductCatalog({ onSelectGame }: ProductCatalogProps) {
                   key={game.id}
                   whileHover={{ y: -4, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
+                  onMouseEnter={() => onHoverGame?.(game)}
+                  onMouseLeave={() => onHoverGame?.(null)}
                   onClick={() => handleSelect(game.id as GameSlug)}
                   className="group relative aspect-[16/10] rounded-2xl overflow-hidden cursor-pointer border border-[#27272a] hover:border-amber-400/80 shadow-2xl transition-all bg-[#121215]"
                 >
@@ -146,6 +149,8 @@ export function ProductCatalog({ onSelectGame }: ProductCatalogProps) {
                 key={game.id}
                 whileHover={{ y: -4, scale: 1.02 }}
                 whileTap={{ scale: 0.97 }}
+                onMouseEnter={() => onHoverGame?.(game)}
+                onMouseLeave={() => onHoverGame?.(null)}
                 onClick={() => handleSelect(game.id as GameSlug)}
                 className="group flex flex-col rounded-xl overflow-hidden bg-[#141418] hover:bg-[#18181f] border border-[#27272a] hover:border-amber-400/80 transition-all cursor-pointer shadow-lg"
               >

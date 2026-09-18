@@ -17,8 +17,9 @@ export const GameCatalog: React.FC<GameCatalogProps> = ({ onSelectGame }) => {
         return { text: 'UID de 8-12 Dígitos', icon: '💎', note: 'Sudamérica SAC / EE.UU.' };
       case 'cod-mobile':
         return { text: 'Activision Player ID', icon: '🎖️', note: 'Ruletas & Pases' };
+      case 'fc-26':
       case 'fc-24':
-        return { text: 'EA Sports UID', icon: '⚽', note: 'Ultimate Team Points' };
+        return { text: 'EA Sports FC UID / Gamertag', icon: '⚽', note: 'FC Points & Ultimate Team' };
       case 'pubg-mobile':
         return { text: 'Character ID', icon: '🪖', note: 'Royale Pass & UC' };
       case 'roblox':

@@ -159,7 +159,7 @@ export const RechargeTerminal: React.FC<RechargeTerminalProps> = ({
         uid: '691048201',
         verifiedAt: 'Automático',
       });
-    } else if (gameId === 'fc-24') {
+    } else if (gameId === 'fc-26' || gameId === 'fc-24') {
       setPlayerUid('712948123');
       setPlayerVerification({
         isValid: true,

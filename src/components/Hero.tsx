@@ -39,13 +39,13 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       ctaText: 'Recargar Diamantes',
     },
     {
-      id: 'fc-24' as GameSlug,
+      id: 'fc-26' as GameSlug,
       badge: 'EA SPORTS • TORNEOS & POZOS',
-      title: 'FC 24 - FC POINTS & ARENA',
+      title: 'FC 26 - FC POINTS & ARENA',
       tagline: 'Puntos FC para tus sobres Ultimate Team y torneos de fútbol con premios en USDT.',
       highlights: ['Sobres Promo', 'FC Points', 'Torneo 1v1', 'Premios en $'],
-      bgImage: '/assets/banners/banner-fc24.jpg',
-      logoImage: '/assets/logos/fc-24.svg',
+      bgImage: '/assets/banners/banner-fc26.jpg',
+      logoImage: '/assets/logos/fc-26.svg',
       ctaText: 'Ver Puntos & Torneo',
     },
     {

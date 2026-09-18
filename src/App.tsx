@@ -21,7 +21,7 @@ import { supabase } from './services/supabase';
 import { Game, GamePackage, GameSlug, Order, PaymentMethodType, PlayerVerification } from './types';
 import { GAMES_DATA } from './data/mockData';
 import { sound } from './utils/audio';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'motion/react';
 
 // ═══════════════════════════════════════════════════════════════
 // APP — Nexus Recharge
@@ -36,6 +36,7 @@ export default function App() {
   const [appView, setAppView] = useState<AppView>('home');
   const [selectedGame, setSelectedGame] = useState<Game | null>(null);
   const [selectedPackageId, setSelectedPackageId] = useState<string | undefined>();
+  const [hoveredGame, setHoveredGame] = useState<Game | null>(null);
 
   // ── Auth & Supabase state ──
   const { user, profile } = useAuth();
@@ -236,26 +237,89 @@ export default function App() {
     }
   };
 
+  // ── Reactive Illumination & Dynamic Ambient Lighting ──
+  const activeGame = selectedGame || hoveredGame;
+  const activeThemeColor = activeGame?.themeColor || '#f59e0b';
+  const activeGlowColor = activeGame?.glowColor || 'rgba(245, 158, 11, 0.25)';
+
+  // ── Scroll Parallax Depth ──
+  const { scrollY } = useScroll();
+  const orb1Y = useTransform(scrollY, [0, 2000], [0, 420]);
+  const orb2Y = useTransform(scrollY, [0, 2000], [0, -320]);
+  const orb3Y = useTransform(scrollY, [0, 2000], [0, 250]);
+
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden transition-colors duration-300">
+    <div className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden transition-colors duration-300 relative">
+      {/* ═══ Dynamic Reactive Ambient Illumination ═══ */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transition-all duration-700">
+        {/* Dynamic morphing radial halo */}
+        <motion.div
+          animate={{
+            background: `radial-gradient(ellipse 90% 60% at 50% -10%, ${activeThemeColor}22, transparent 75%)`,
+          }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="absolute inset-0"
+        />
+
+        {/* Scroll-reactive floating luminous orb 1 (Left Top) */}
+        <motion.div
+          style={{ y: orb1Y }}
+          animate={{
+            backgroundColor: activeThemeColor,
+            opacity: activeGame ? 0.22 : 0.08,
+            scale: activeGame ? 1.25 : 1,
+          }}
+          transition={{ duration: 0.6 }}
+          className="absolute -top-36 -left-36 w-[550px] h-[550px] rounded-full blur-[140px]"
+        />
+
+        {/* Scroll-reactive floating luminous orb 2 (Right Mid) */}
+        <motion.div
+          style={{ y: orb2Y }}
+          animate={{
+            backgroundColor: activeThemeColor,
+            opacity: activeGame ? 0.18 : 0.06,
+            scale: activeGame ? 1.2 : 1,
+          }}
+          transition={{ duration: 0.7 }}
+          className="absolute top-1/3 -right-44 w-[500px] h-[500px] rounded-full blur-[150px]"
+        />
+
+        {/* Scroll-reactive floating luminous orb 3 (Bottom Center) */}
+        <motion.div
+          style={{ y: orb3Y }}
+          animate={{
+            backgroundColor: activeThemeColor,
+            opacity: activeGame ? 0.14 : 0.05,
+          }}
+          transition={{ duration: 0.8 }}
+          className="absolute bottom-20 left-1/4 w-[420px] h-[420px] rounded-full blur-[130px]"
+        />
+
+        {/* Cyber micro-grid layer */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
+      </div>
+
       {/* ═══ Sticky Header ═══ */}
-      <Header
-        activeTab={activeTab}
-        setActiveTab={handleSetActiveTab}
-        onOpenArchitecture={() => {}}
-        onOpenCommunity={() => setIsCommunityOpen(true)}
-        onSelectGame={(gameId) => navigateToProduct(gameId)}
-        onOpenAuth={(tab) => {
-          setAuthModalTab(tab);
-          setIsAuthModalOpen(true);
-        }}
-        onOpenAdmin={() => setIsAdminOpen(true)}
-        isKillSwitchActive={isKillSwitchActive}
-        userBalance={profile?.walletBalanceUsd ?? userBalance}
-      />
+      <div className="relative z-30">
+        <Header
+          activeTab={activeTab}
+          setActiveTab={handleSetActiveTab}
+          onOpenArchitecture={() => {}}
+          onOpenCommunity={() => setIsCommunityOpen(true)}
+          onSelectGame={(gameId) => navigateToProduct(gameId)}
+          onOpenAuth={(tab) => {
+            setAuthModalTab(tab);
+            setIsAuthModalOpen(true);
+          }}
+          onOpenAdmin={() => setIsAdminOpen(true)}
+          isKillSwitchActive={isKillSwitchActive}
+          userBalance={profile?.walletBalanceUsd ?? userBalance}
+        />
+      </div>
 
       {/* ═══ Main Content ═══ */}
-      <main className="pt-20 sm:pt-24 pb-8">
+      <main className="relative z-10 pt-20 sm:pt-24 pb-8">
         <AnimatePresence mode="wait">
           {/* ═══════════════════════════════════════════════
               HOME — Continuous scroll landing page
@@ -276,7 +340,10 @@ export default function App() {
 
               {/* Product Catalog — Recomendados + Populares */}
               <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-12">
-                <ProductCatalog onSelectGame={(gameId) => navigateToProduct(gameId)} />
+                <ProductCatalog 
+                  onSelectGame={(gameId) => navigateToProduct(gameId)} 
+                  onHoverGame={setHoveredGame}
+                />
               </div>
 
               {/* Tournaments Section — Portadas + Community Banner */}

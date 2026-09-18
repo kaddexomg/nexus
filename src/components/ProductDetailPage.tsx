@@ -56,12 +56,26 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
   const [selectedPayment, setSelectedPayment] = useState<PaymentMethodType>('pagomovil');
 
   // Determine what kind of product this is
-  const isWalletOrZinli = game.id === 'zinli';
-  const isStreaming = game.id === 'netflix' || game.id === 'spotify';
-  const isGiftCard = game.id === 'steam' || game.id === 'shein';
+  const isFreeFire = game.id === 'free-fire';
+  const isValorant = game.id === 'valorant';
+  const isFC = game.id === 'fc-26' || game.id === 'fc-24';
   const isMLBB = game.id === 'mobile-legends';
   const isRoblox = game.id === 'roblox';
-  const isSupercell = game.id === 'brawl-stars';
+  const isBrawlStars = game.id === 'brawl-stars';
+  const isWalletOrZinli = game.id === 'zinli';
+  const isStreaming = game.id === 'netflix' || game.id === 'spotify';
+  const isGiftCard = game.id === 'steam' || game.id === 'shein' || game.id === 'playstation' || game.id === 'xbox' || game.id === 'google-play' || game.id === 'apple' || game.id === 'discord-nitro';
+
+  // Dynamic branding colors
+  const brandColor = game.themeColor || '#f59e0b';
+  const brandGlow = game.glowColor || 'rgba(245, 158, 11, 0.45)';
+
+  // Tailored platform states
+  const [selectedRegion, setSelectedRegion] = useState<string>(
+    game.serverRegions?.[0] || 'Sudamérica (SAC)'
+  );
+  const [selectedPlatform, setSelectedPlatform] = useState<string>('PlayStation 5');
+  const [cardholderName, setCardholderName] = useState<string>('');
 
   // Initialize selected package
   useEffect(() => {
@@ -94,6 +108,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       try { sound.playAlert(); } catch (e) {}
       return;
     }
+
+    if (isWalletOrZinli && !cardholderName.trim()) {
+      setVerificationError('Por favor ingresa el nombre del titular registrado en Zinli.');
+      try { sound.playAlert(); } catch (e) {}
+      return;
+    }
     
     // Validate format
     if (game.regexPattern) {
@@ -119,7 +139,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
           isValid: true,
           nickname: profile.nickname,
           level: profile.level,
-          server: isMLBB ? `Zona ${zoneId.trim()} (${profile.server})` : profile.server,
+          server: isMLBB ? `Zona ${zoneId.trim()} (${profile.server})` : isFreeFire || isValorant ? selectedRegion : profile.server,
           uid: isMLBB ? `${cleanId} (${zoneId.trim()})` : cleanId,
           verifiedAt: 'Verificado ahora'
         });
@@ -128,23 +148,38 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
       } else {
         // Generate realistic verified identity based on category
         let nickname = `Usuario_${cleanId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 7)}`;
-        let server = game.serverRegions[0] || 'Oficial';
+        let server = selectedRegion;
 
-        if (isWalletOrZinli) {
-          nickname = `Zinli: ${cleanId.split('@')[0].toUpperCase()}`;
-          server = 'Zinli Visa (Panamá) - Activa';
+        if (isFreeFire) {
+          nickname = `Alok_Gamer_${cleanId.slice(-4)}`;
+          server = selectedRegion;
+        } else if (isValorant) {
+          nickname = cleanId.includes('#') ? cleanId : `${cleanId}#LAN`;
+          server = selectedRegion;
+        } else if (isFC) {
+          nickname = `EA_Champion_${cleanId.slice(-4)}`;
+          server = selectedPlatform;
+        } else if (isBrawlStars) {
+          nickname = `Brawler_${cleanId.replace('#', '')}`;
+          server = 'Supercell ID Global';
+        } else if (isWalletOrZinli) {
+          nickname = cardholderName.trim() || `Titular Zinli (${cleanId.split('@')[0]})`;
+          server = 'Tarjeta Visa Panamá USD (Acreditación P2P)';
         } else if (isStreaming) {
           nickname = `Entrega Digital a: ${cleanId}`;
           server = `${game.name} Oficial`;
         } else if (isGiftCard) {
-          nickname = `Código PIN a: ${cleanId}`;
-          server = `${game.name} Global`;
+          nickname = `E-PIN Digital a: ${cleanId}`;
+          server = `${game.name} Store Oficial`;
         } else if (isRoblox) {
           nickname = cleanId.startsWith('@') ? cleanId : `@${cleanId}`;
           server = 'Roblox Global';
         } else if (isMLBB) {
           nickname = `Player_${cleanId.slice(0, 6)}`;
           server = `Servidor Zona ${zoneId.trim() || '2041'}`;
+        } else {
+          nickname = `Player_${cleanId.slice(0, 6)}`;
+          server = `${game.name} Global`;
         }
 
         setVerificationResult({
@@ -238,9 +273,24 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
 
   return (
     <div className="min-h-screen bg-[var(--bg-primary)] pb-28 text-[var(--text-primary)]">
-      {/* Top Breadcrumb & Product Banner */}
-      <div className="bg-[var(--bg-surface)] border-b border-[var(--border-default)]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Top Breadcrumb & Product Banner with reactive brand glow */}
+      <div 
+        className="relative overflow-hidden bg-[var(--bg-surface)] border-b border-[var(--border-default)]"
+        style={{
+          boxShadow: `0 10px 40px -20px ${brandGlow}`
+        }}
+      >
+        {/* Dynamic reactive ambient radiant beam */}
+        <div 
+          className="absolute -top-24 -left-20 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none transition-all duration-700"
+          style={{ backgroundColor: brandColor }}
+        />
+        <div 
+          className="absolute -bottom-24 right-10 w-72 h-72 rounded-full blur-3xl opacity-15 pointer-events-none transition-all duration-700"
+          style={{ backgroundColor: brandColor }}
+        />
+
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => {
@@ -264,7 +314,7 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               <div>
                 <h1 className="font-extrabold text-xl leading-tight text-[var(--text-primary)]">{game.name}</h1>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-xs text-[var(--accent)] font-semibold">
+                  <span className="text-xs font-semibold" style={{ color: brandColor }}>
                     {game.providerTag}
                   </span>
                   <span className="text-xs text-[var(--text-muted)]">•</span>
@@ -292,7 +342,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         <section className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-[var(--accent)] text-[var(--text-inverse)] flex items-center justify-center text-sm font-extrabold">1</span>
+              <span 
+                className="w-7 h-7 rounded-full text-black flex items-center justify-center text-sm font-black shadow-sm"
+                style={{ backgroundColor: brandColor }}
+              >
+                1
+              </span>
               <span>{getSectionTitle()}</span>
             </h2>
             <span className="text-xs text-[var(--text-muted)]">Paso obligatorio</span>
@@ -318,6 +373,139 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             </div>
           </div>
           
+          {/* ═══ PLATFORM SPECIFIC CONFIGURATORS ═══ */}
+          {/* Free Fire / Valorant Region Selector */}
+          {(isFreeFire || isValorant) && (
+            <div className="mb-5 p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)]">
+              <label className="block text-xs font-bold text-[var(--text-primary)] mb-2 flex items-center justify-between">
+                <span>Selecciona tu Región / Servidor Oficial:</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">Requerido para verificación</span>
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {(isFreeFire
+                  ? ['Sudamérica (SAC)', 'EE.UU. (US)', 'Europa (EU)']
+                  : ['LAN (Latam Norte)', 'LAS (Latam Sur)', 'NA (North America)', 'BR (Brasil)']
+                ).map((region) => (
+                  <button
+                    key={region}
+                    type="button"
+                    onClick={() => {
+                      try { sound.playClick(); } catch (e) {}
+                      setSelectedRegion(region);
+                      if (verificationResult) {
+                        setVerificationResult(null);
+                        setIsAccountConfirmed(false);
+                      }
+                    }}
+                    className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold border transition-all cursor-pointer ${
+                      selectedRegion === region
+                        ? 'text-black border-transparent shadow-md'
+                        : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                    }`}
+                    style={selectedRegion === region ? { backgroundColor: brandColor } : {}}
+                  >
+                    {region}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* EA Sports FC 26 Platform Selector */}
+          {isFC && (
+            <div className="mb-5 p-4 rounded-xl bg-[var(--bg-surface)] border border-[var(--border-default)]">
+              <label className="block text-xs font-bold text-[var(--text-primary)] mb-2 flex items-center justify-between">
+                <span>Selecciona tu Plataforma de EA Sports FC 26:</span>
+                <span className="text-[10px] font-mono text-[var(--text-muted)]">Acreditación multiplataforma</span>
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  'FC Mobile (Android / iOS)',
+                  'PlayStation 5 / PS4',
+                  'Xbox Series X|S / One',
+                  'PC (EA App / Steam)'
+                ].map((plat) => (
+                  <button
+                    key={plat}
+                    type="button"
+                    onClick={() => {
+                      try { sound.playClick(); } catch (e) {}
+                      setSelectedPlatform(plat);
+                      if (verificationResult) {
+                        setVerificationResult(null);
+                        setIsAccountConfirmed(false);
+                      }
+                    }}
+                    className={`px-3 py-2 rounded-xl text-xs font-semibold border text-center transition-all cursor-pointer ${
+                      selectedPlatform === plat
+                        ? 'text-black border-transparent shadow-md font-bold'
+                        : 'bg-[var(--bg-card)] text-[var(--text-secondary)] border-[var(--border-default)] hover:text-[var(--text-primary)]'
+                    }`}
+                    style={selectedPlatform === plat ? { backgroundColor: brandColor } : {}}
+                  >
+                    {plat}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Zinli Cardholder Name Input & Virtual Card Preview */}
+          {isWalletOrZinli && (
+            <div className="mb-5 space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-[var(--text-primary)] mb-1.5">
+                  Nombre y Apellido del Titular Zinli
+                </label>
+                <input
+                  type="text"
+                  value={cardholderName}
+                  onChange={(e) => {
+                    setCardholderName(e.target.value);
+                    if (verificationResult) {
+                      setVerificationResult(null);
+                      setIsAccountConfirmed(false);
+                    }
+                  }}
+                  placeholder="Ej: Carlos Mendoza"
+                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-xl focus:border-[var(--accent)] outline-none text-sm transition-all"
+                />
+              </div>
+
+              {/* Interactive Virtual Zinli Visa Card Preview */}
+              <div className="p-5 rounded-2xl bg-gradient-to-tr from-[#2e1065] via-[#581c87] to-[#7e22ce] text-white shadow-xl relative overflow-hidden border border-purple-400/30">
+                <div className="absolute -right-6 -top-6 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
+                <div className="flex justify-between items-start mb-6">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl font-black tracking-tight text-white">zinli</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-semibold uppercase tracking-wider">Visa Prepago USD</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-black italic tracking-wider text-xl">VISA</span>
+                    <span className="block text-[8px] text-purple-200 uppercase font-mono">Débito Internacional</span>
+                  </div>
+                </div>
+                <div className="font-mono text-sm sm:text-base tracking-[0.25em] text-purple-100 mb-5">
+                  4213 •••• •••• {identifier ? identifier.slice(0, 4).toUpperCase() : '2026'}
+                </div>
+                <div className="flex justify-between items-end text-xs">
+                  <div>
+                    <span className="text-[9px] uppercase text-purple-300 block font-semibold">Titular Autorizado</span>
+                    <span className="font-bold tracking-wide uppercase text-sm text-white">
+                      {cardholderName.trim() || 'NOMBRE DEL TITULAR'}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[9px] uppercase text-purple-300 block font-semibold">Correo de Acreditación</span>
+                    <span className="font-mono text-xs text-purple-100">
+                      {identifier.trim() || 'tu-correo@zinli.com'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold text-[var(--text-primary)] mb-2">
@@ -363,7 +551,8 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     type="button"
                     onClick={handleVerify}
                     disabled={!identifier.trim() || isVerifying || !!verificationResult}
-                    className="w-full py-3 bg-[var(--accent)] text-[var(--text-inverse)] font-bold text-sm rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--accent-hover)] transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                    className="w-full py-3 text-black font-extrabold text-sm rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                    style={{ backgroundColor: brandColor }}
                   >
                     {isVerifying ? (
                       <>
@@ -453,7 +642,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         <section className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-[var(--accent)] text-[var(--text-inverse)] flex items-center justify-center text-sm font-extrabold">2</span>
+              <span 
+                className="w-7 h-7 rounded-full text-black flex items-center justify-center text-sm font-black shadow-sm"
+                style={{ backgroundColor: brandColor }}
+              >
+                2
+              </span>
               <span>Selecciona tu Recarga o Paquete</span>
             </h2>
 
@@ -469,9 +663,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                     }}
                     className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                       selectedCategory === cat
-                        ? 'bg-[var(--accent)] text-[var(--text-inverse)] shadow-sm'
+                        ? 'text-black shadow-sm font-bold'
                         : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
                     }`}
+                    style={selectedCategory === cat ? { backgroundColor: brandColor } : {}}
                   >
                     {cat === 'diamonds' ? '💎 Monedas' : cat === 'passes' ? '🎟️ Pases' : cat === 'giftcards' ? '🎁 Gift Cards' : cat === 'balance' ? '💵 Saldo' : cat}
                   </button>
@@ -495,13 +690,21 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   }}
                   className={`relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected 
-                      ? 'bg-[var(--accent)]/10 border-[var(--accent)] shadow-[0_0_18px_rgba(167,139,250,0.25)] scale-[1.01]' 
+                      ? 'border-2 scale-[1.01]' 
                       : 'bg-[var(--bg-surface)] border-[var(--border-default)] hover:border-[var(--border-emphasis)] hover:bg-[var(--bg-elevated)]'
                   }`}
+                  style={isSelected ? {
+                    borderColor: brandColor,
+                    backgroundColor: `${brandColor}12`,
+                    boxShadow: `0 0 20px ${brandGlow}`,
+                  } : undefined}
                 >
                   {/* Tag badge */}
                   {pkg.tag && (
-                    <span className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[var(--accent)] text-[var(--text-inverse)] shadow-sm">
+                    <span 
+                      className="absolute -top-2.5 right-3 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider text-black shadow-sm"
+                      style={{ backgroundColor: brandColor }}
+                    >
                       {pkg.tag}
                     </span>
                   )}
@@ -512,7 +715,10 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                         {pkg.name}
                       </h4>
                       {isSelected && (
-                        <div className="w-5 h-5 rounded-full bg-[var(--accent)] text-[var(--text-inverse)] flex items-center justify-center flex-shrink-0">
+                        <div 
+                          className="w-5 h-5 rounded-full text-black flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: brandColor }}
+                        >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                         </div>
                       )}
@@ -534,7 +740,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                       </span>
                     </div>
                     <div className="text-right">
-                      <span className="text-xs font-bold text-[var(--accent)] font-mono bg-[var(--accent)]/10 px-2 py-1 rounded-md">
+                      <span 
+                        className="text-xs font-bold font-mono px-2 py-1 rounded-md"
+                        style={{
+                          backgroundColor: `${brandColor}22`,
+                          color: brandColor,
+                        }}
+                      >
                         ${pkg.priceUsdt.toFixed(2)} USD
                       </span>
                     </div>
@@ -551,7 +763,12 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
         <section className="bg-[var(--bg-card)] rounded-2xl p-6 border border-[var(--border-default)] shadow-sm">
           <div className="mb-4">
             <h2 className="text-lg sm:text-xl font-bold flex items-center gap-2.5">
-              <span className="w-7 h-7 rounded-full bg-[var(--accent)] text-[var(--text-inverse)] flex items-center justify-center text-sm font-extrabold">3</span>
+              <span 
+                className="w-7 h-7 rounded-full text-black flex items-center justify-center text-sm font-black shadow-sm"
+                style={{ backgroundColor: brandColor }}
+              >
+                3
+              </span>
               <span>Elige tu Medio de Pago</span>
             </h2>
             <p className="text-xs text-[var(--text-secondary)] mt-1 ml-9.5">
@@ -572,9 +789,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   }}
                   className={`relative p-4 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-[var(--accent)]/10 border-[var(--accent)] shadow-[0_0_15px_rgba(167,139,250,0.2)]'
+                      ? 'border-2 scale-[1.01]'
                       : 'bg-[var(--bg-surface)] border-[var(--border-default)] hover:border-[var(--border-emphasis)]'
                   }`}
+                  style={isSelected ? {
+                    borderColor: brandColor,
+                    backgroundColor: `${brandColor}12`,
+                    boxShadow: `0 0 16px ${brandGlow}`,
+                  } : undefined}
                 >
                   {method.badge && (
                     <span className="absolute -top-2 right-2 px-1.5 py-0.5 rounded text-[9px] font-bold bg-[var(--color-success)] text-emerald-950">
@@ -604,12 +826,21 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
             RESUMEN DE ORDEN & CTA FLOTANTE
             ═══════════════════════════════════════════════════════════════ */}
         {selectedPackage && (
-          <div className="bg-gradient-to-r from-[var(--bg-card)] via-[var(--bg-surface)] to-[var(--bg-card)] rounded-2xl p-6 border-2 border-[var(--accent)]/50 shadow-xl">
+          <div 
+            className="bg-gradient-to-r from-[var(--bg-card)] via-[var(--bg-surface)] to-[var(--bg-card)] rounded-2xl p-6 border-2 shadow-2xl transition-all"
+            style={{
+              borderColor: brandColor,
+              boxShadow: `0 10px 40px -10px ${brandGlow}`
+            }}
+          >
             <div className="flex flex-col md:flex-row items-center justify-between gap-6">
               {/* Order Summary text */}
               <div className="space-y-1.5 text-center md:text-left w-full md:w-auto">
                 <div className="flex items-center justify-center md:justify-start gap-2">
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-[var(--accent)]/20 text-[var(--accent)]">
+                  <span 
+                    className="text-xs font-bold px-2 py-0.5 rounded text-black"
+                    style={{ backgroundColor: brandColor }}
+                  >
                     Resumen del Pedido
                   </span>
                   {isAccountConfirmed ? (
@@ -632,7 +863,13 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   <strong className="text-[var(--text-primary)] font-mono text-base">
                     Bs. {toProtectedBs(selectedPackage.priceUsdt).toFixed(2)}
                   </strong>{' '}
-                  <span className="text-xs font-mono text-[var(--accent)]">
+                  <span 
+                    className="text-xs font-mono font-bold px-1.5 py-0.5 rounded"
+                    style={{
+                      backgroundColor: `${brandColor}22`,
+                      color: brandColor,
+                    }}
+                  >
                     (${selectedPackage.priceUsdt.toFixed(2)} USD)
                   </span>
                   {' '}• Vía:{' '}
@@ -648,10 +885,14 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
                   type="button"
                   onClick={handleSubmit}
                   disabled={!canSubmit}
-                  className="w-full md:w-auto px-8 py-4 bg-[var(--cta-bg)] hover:bg-[var(--cta-hover)] text-[var(--cta-text)] font-extrabold text-base rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02] active:scale-[0.98]"
+                  className="w-full md:w-auto px-8 py-4 text-black font-black text-base rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02] active:scale-[0.98] hover:brightness-110"
+                  style={{
+                    backgroundColor: brandColor,
+                    boxShadow: canSubmit ? `0 10px 30px ${brandGlow}` : undefined,
+                  }}
                 >
                   <span>CONTINUAR AL PAGO</span>
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-5 h-5 stroke-[2.5]" />
                 </button>
                 <span className="text-[11px] text-[var(--text-muted)] mt-1.5 text-center">
                   Despacho directo en menos de 2 minutos

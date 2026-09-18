@@ -11,7 +11,7 @@ interface TournamentSectionProps {
 export function TournamentSection({ onViewTournaments, onOpenCommunity }: TournamentSectionProps) {
   const tournamentGameSlugs: GameSlug[] = [
     'free-fire',
-    'fc-24',
+    'fc-26',
     'mobile-legends',
     'brawl-stars',
     'roblox',
