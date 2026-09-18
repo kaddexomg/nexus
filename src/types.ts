@@ -7,15 +7,22 @@ export type GameSlug =
   | 'mobile-legends'
   | 'brawl-stars'
   | 'zinli'
-  | 'binance-pay'
+  | 'netflix'
+  | 'spotify'
   | 'steam'
-  | 'shein';
+  | 'shein'
+  | 'playstation'
+  | 'xbox'
+  | 'google-play'
+  | 'apple'
+  | 'valorant'
+  | 'discord-nitro';
 
 export interface Game {
   id: GameSlug;
   name: string;
   category: string;
-  serviceType?: 'game' | 'wallet' | 'giftcard';
+  serviceType?: 'game' | 'wallet' | 'giftcard' | 'subscription';
   deliveryTime: string;
   providerTag: string;
   publisher?: string;
@@ -30,6 +37,10 @@ export interface Game {
   idPlaceholder: string;
   idFormatHint: string;
   accountIdentifierLabel?: string;
+  accountType?: 'uid' | 'zone_uid' | 'username' | 'email' | 'tag';
+  requiresZoneId?: boolean;
+  zonePlaceholder?: string;
+  zoneFormatHint?: string;
   regexPattern: string;
 }
 

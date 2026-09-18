@@ -1,0 +1,7 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <polygon points="60,35 105,60 60,85" fill="#00E676"/>
+    <polygon points="60,35 95,54 85,60" fill="#00B0FF"/>
+    <polygon points="60,85 95,66 85,60" fill="#FF3D00"/>
+    <polygon points="105,60 92,52 85,60 92,68" fill="#FFC400"/>
+    <text x="130" y="74" font-family="'Arial Black', sans-serif" font-size="38" fill="#FFFFFF">Google Play</text>
+  </svg>

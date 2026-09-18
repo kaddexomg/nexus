@@ -220,14 +220,14 @@ export const RechargeTerminal: React.FC<RechargeTerminalProps> = ({
         uid: 'tu-correo-zinli@gmail.com',
         verifiedAt: 'Automático',
       });
-    } else if (gameId === 'binance-pay') {
-      setPlayerUid('198401293');
+    } else if (gameId === 'netflix' || gameId === 'spotify') {
+      setPlayerUid('cliente.entrega@gmail.com');
       setPlayerVerification({
         isValid: true,
-        nickname: 'Vortex_Pay_VE',
-        level: 99,
-        server: 'Binance Pay Latam',
-        uid: '198401293',
+        nickname: 'Entrega Digital Verificada',
+        level: 1,
+        server: 'Entrega Inmediata',
+        uid: 'cliente.entrega@gmail.com',
         verifiedAt: 'Automático',
       });
     } else if (gameId === 'steam') {
@@ -304,8 +304,8 @@ export const RechargeTerminal: React.FC<RechargeTerminalProps> = ({
           generatedNick = targetIdentifier.startsWith('@') ? targetIdentifier : `@${targetIdentifier}`;
         } else if (selectedGameId === 'zinli') {
           generatedNick = `${targetIdentifier.split('@')[0]} (Zinli P2P)`;
-        } else if (selectedGameId === 'binance-pay') {
-          generatedNick = `Binance_Trader_${cleanKey.slice(-4)}`;
+        } else if (selectedGameId === 'netflix' || selectedGameId === 'spotify') {
+          generatedNick = `PIN_${selectedGameId.toUpperCase()}_${cleanKey.slice(-4)}`;
         } else if (selectedGameId === 'mobile-legends') {
           generatedNick = `MLBB_Champion_${cleanKey.slice(-4)}`;
         } else {

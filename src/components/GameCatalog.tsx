@@ -29,8 +29,10 @@ export const GameCatalog: React.FC<GameCatalogProps> = ({ onSelectGame }) => {
         return { text: 'Player Tag Supercell', icon: '🏆', note: 'Gemas & Brawl Pass Plus' };
       case 'zinli':
         return { text: 'Correo Registrado Zinli', icon: '💳', note: 'Transferencia P2P en 60s' };
-      case 'binance-pay':
-        return { text: 'Binance Pay ID / Correo', icon: '🪙', note: 'USDT Instantáneo sin red' };
+      case 'netflix':
+        return { text: 'Correo / PIN Oficial', icon: '🍿', note: 'Pantallas Ultra HD 4K' };
+      case 'spotify':
+        return { text: 'Correo / Activación', icon: '🎧', note: 'Música Sin Anuncios' };
       case 'steam':
         return { text: 'Correo / Código Canjeable', icon: '🎮', note: 'Steam Wallet USD Oficial' };
       case 'shein':

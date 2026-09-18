@@ -1,0 +1,7 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="60" r="38" fill="#171A21"/>
+    <circle cx="95" cy="50" r="12" fill="#66C0F4"/>
+    <circle cx="70" cy="72" r="8" fill="#66C0F4"/>
+    <line x1="90" y1="53" x2="73" y2="70" stroke="#66C0F4" stroke-width="5"/>
+    <text x="140" y="74" font-family="'Arial Black', sans-serif" font-size="48" fill="#FFFFFF" letter-spacing="4">STEAM</text>
+  </svg>

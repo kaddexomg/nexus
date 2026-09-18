@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <path d="M70 25 L120 25 L95 85 L70 25 Z" fill="#FF4655"/>
+    <path d="M130 25 L145 25 L115 95 L90 95 Z" fill="#FF4655"/>
+    <text x="170" y="78" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="8">VALORANT</text>
+  </svg>

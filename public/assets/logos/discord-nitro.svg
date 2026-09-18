@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="60" r="38" fill="#5865F2"/>
+    <path d="M65,55 Q80,50 95,55 L90,72 Q80,68 70,72 Z" fill="#FFFFFF"/>
+    <text x="140" y="74" font-family="'Arial Black', sans-serif" font-size="44" fill="#5865F2" letter-spacing="3">NITRO</text>
+  </svg>

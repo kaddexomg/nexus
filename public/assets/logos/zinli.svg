@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <rect x="50" y="32" width="70" height="56" rx="10" fill="#7C3AED"/>
+    <circle cx="85" cy="60" r="16" fill="#FBBF24"/>
+    <text x="145" y="74" font-family="'Arial Black', sans-serif" font-weight="900" font-size="50" fill="#FFFFFF" letter-spacing="3">zinli</text>
+  </svg>

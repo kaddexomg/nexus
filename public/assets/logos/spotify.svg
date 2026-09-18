@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="60" r="38" fill="#1DB954"/>
+    <path d="M60,52 Q80,46 100,53 M63,61 Q80,56 97,62 M66,70 Q80,66 94,71" stroke="#000000" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <text x="140" y="74" font-family="'Arial Black', sans-serif" font-size="42" fill="#FFFFFF" letter-spacing="2">Spotify</text>
+  </svg>

@@ -99,18 +99,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         </div>
 
         {/* Order Preview Strip */}
-        <div className="p-3 rounded-xl bg-[#18181b] border border-[#27272a] flex items-center justify-between text-xs font-mono">
+        <div className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-default)] flex items-center justify-between text-xs font-mono">
           <div>
-            <span className="text-[#a1a1aa] block text-[10px]">RECEPTOR DE INYECCIÓN</span>
-            <span className="text-[#fafafa] font-bold">
+            <span className="text-[var(--text-muted)] block text-[10px] uppercase font-bold tracking-wider">Destinatario / Cuenta</span>
+            <span className="text-[var(--text-primary)] font-bold">
               {game.name} • {playerVerification.nickname}
             </span>
-            <span className="text-[#a1a1aa] text-[10px] block">UID: {playerVerification.uid}</span>
+            <span className="text-[var(--text-secondary)] text-[10px] block">ID: {playerVerification.uid}</span>
           </div>
           <div className="text-right">
-            <span className="text-[#a1a1aa] block text-[10px]">PAQUETE</span>
-            <span className="text-[#a78bfa] font-bold">{pkg.name}</span>
-            <span className="text-[#34d399] text-[10px] block">Anti-Ban 100%</span>
+            <span className="text-[var(--text-muted)] block text-[10px] uppercase font-bold tracking-wider">Paquete</span>
+            <span className="text-[var(--accent)] font-bold">{pkg.name}</span>
+            <span className="text-[var(--color-success)] text-[10px] block font-medium">Recarga Oficial 100%</span>
           </div>
         </div>
 
@@ -300,11 +300,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
           <button
             type="submit"
-            className="w-full py-3.5 rounded-xl bg-[#34d399] text-[#09090b] font-bold text-xs tracking-wide shadow-md hover:bg-[#6ee7b7] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-4 rounded-xl bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-[var(--text-inverse)] font-extrabold text-sm tracking-wide shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             id="btn-submit-ref"
           >
-            <span className="material-symbols-outlined text-[18px]">verified</span>
-            <span>Validar y Despachar Diamantes (Bot Worker)</span>
+            <Check className="w-4 h-4" />
+            <span>Confirmar Pago y Despachar Pedido</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>

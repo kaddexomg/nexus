@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="60" r="38" fill="#003791"/>
+    <path d="M70,42 Q80,35 90,42 Q90,75 75,75 Q65,75 65,65 Z" fill="#FFFFFF"/>
+    <text x="140" y="74" font-family="'Arial Black', sans-serif" font-size="40" fill="#FFFFFF" letter-spacing="2">PlayStation</text>
+  </svg>

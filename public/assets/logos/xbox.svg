@@ -1,0 +1,5 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="80" cy="60" r="38" fill="#107C10"/>
+    <path d="M60,45 Q80,60 100,45 M60,75 Q80,60 100,75" stroke="#FFFFFF" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <text x="140" y="74" font-family="'Arial Black', sans-serif" font-size="46" fill="#FFFFFF" letter-spacing="4">XBOX</text>
+  </svg>

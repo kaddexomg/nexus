@@ -1,56 +1,67 @@
 import React, { useState, useEffect } from 'react';
 import { Header, MainNavTab } from './components/Header';
-import { DynamicIsland } from './components/DynamicIsland';
 import { Hero } from './components/Hero';
-import { MarqueeTicker } from './components/MarqueeTicker';
-import { StepRechargeWizard } from './components/StepRechargeWizard';
+import { ProductCatalog } from './components/ProductCatalog';
+import { ProductDetailPage } from './components/ProductDetailPage';
+import { TournamentSection } from './components/TournamentSection';
 import { ZinliWalletSection } from './components/ZinliWalletSection';
 import { InteractiveTournamentHub } from './components/InteractiveTournamentHub';
-import { LiveRateDashboard } from './components/LiveRateDashboard';
 import { OrderSearchSection } from './components/OrderSearchSection';
-import { GameCatalog } from './components/GameCatalog';
 import { NexusBotWidget } from './components/NexusBotWidget';
+import { SocialProofToast } from './components/SocialProofToast';
 import { PaymentModal } from './components/PaymentModal';
 import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { AdminConsoleModal } from './components/AdminConsoleModal';
-import { ArchitectureGuideModal } from './components/ArchitectureGuideModal';
 import { CommunityDiscord } from './components/CommunityDiscord';
 import { Footer } from './components/Footer';
+import { AuthModal } from './components/AuthModal';
+import { useAuth } from './context/AuthContext';
+import { supabase } from './services/supabase';
 
 import { Game, GamePackage, GameSlug, Order, PaymentMethodType, PlayerVerification } from './types';
+import { GAMES_DATA } from './data/mockData';
 import { sound } from './utils/audio';
 import { motion, AnimatePresence } from 'motion/react';
 
+// ═══════════════════════════════════════════════════════════════
+// APP — Nexus Recharge
+// Navigation: Homepage (scroll) / Product Detail / Tournaments / Wallets / Tracking
+// ═══════════════════════════════════════════════════════════════
+
+type AppView = 'home' | 'product' | 'tournaments' | 'wallets' | 'tracking';
+
 export default function App() {
-  // Multi-Screen Router with Motion Transitions (User's primary requirement)
+  // ── View state ──
   const [activeTab, setActiveTab] = useState<MainNavTab>('home');
+  const [appView, setAppView] = useState<AppView>('home');
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | undefined>();
 
-  // Preselection states for linking Banners and Catalog directly to Recharge Wizard
-  const [preselectedGameId, setPreselectedGameId] = useState<GameSlug>('free-fire');
-  const [preselectedPackageId, setPreselectedPackageId] = useState<string>('ff-1060');
+  // ── Auth & Supabase state ──
+  const { user, profile } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalTab, setAuthModalTab] = useState<'login' | 'register' | 'admin'>('login');
 
-  // Modal visibility states
-  const [isAdminOpen, setIsAdminOpen] = useState<boolean>(false);
-  const [isArchitectureOpen, setIsArchitectureOpen] = useState<boolean>(false);
-  const [isCommunityOpen, setIsCommunityOpen] = useState<boolean>(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState<boolean>(false);
-  const [isOrderTrackingOpen, setIsOrderTrackingOpen] = useState<boolean>(false);
+  // ── Modal states ──
+  const [isAdminOpen, setIsAdminOpen] = useState(false);
+  const [isCommunityOpen, setIsCommunityOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isOrderTrackingOpen, setIsOrderTrackingOpen] = useState(false);
 
-  // Active transaction states
+  // ── Transaction state ──
   const [paymentOrderData, setPaymentOrderData] = useState<{
     game: Game;
     pkg: GamePackage;
     playerVerification: PlayerVerification;
     paymentMethod: PaymentMethodType;
   } | null>(null);
-
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
 
-  // System & Operator States
-  const [isKillSwitchActive, setIsKillSwitchActive] = useState<boolean>(false);
-  const [userBalance, setUserBalance] = useState<number>(142.50);
+  // ── System state ──
+  const [isKillSwitchActive, setIsKillSwitchActive] = useState(false);
+  const [userBalance, setUserBalance] = useState(142.50);
 
-  // Initial orders for internal testing and order lookup
+  // ── Orders ──
   const [pendingOrders, setPendingOrders] = useState<Order[]>([
     {
       id: 'ord-bdv-9841',
@@ -102,7 +113,7 @@ export default function App() {
     },
   ]);
 
-  // Secret keyboard combo (Ctrl+Shift+A) for internal operators only - NO client-visible buttons
+  // ── Admin shortcut Ctrl+Shift+A ──
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
@@ -114,7 +125,38 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Handler to open Payment Modal from Terminal / Wizard
+  // ── Navigate to a game's product detail page ──
+  const navigateToProduct = (gameId: GameSlug, packageId?: string) => {
+    try { sound.playClick(); } catch {}
+    const game = GAMES_DATA.find((g) => g.id === gameId);
+    if (game) {
+      setSelectedGame(game);
+      setSelectedPackageId(packageId);
+      setAppView('product');
+      setActiveTab('recharge');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // ── Navigate to tournaments ──
+  const navigateToTournaments = () => {
+    try { sound.playClick(); } catch {}
+    setAppView('tournaments');
+    setActiveTab('tournaments');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ── Go back to homepage ──
+  const goHome = () => {
+    try { sound.playClick(); } catch {}
+    setSelectedGame(null);
+    setSelectedPackageId(undefined);
+    setAppView('home');
+    setActiveTab('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // ── Payment Modal ──
   const handleOpenPaymentModal = (data: {
     game: Game;
     pkg: GamePackage;
@@ -125,7 +167,6 @@ export default function App() {
     setIsPaymentModalOpen(true);
   };
 
-  // Handler when user submits payment reference or wallet pay
   const handleSubmitPaymentOrder = (referenceNumber: string) => {
     if (!paymentOrderData) return;
 
@@ -159,183 +200,185 @@ export default function App() {
     }
   };
 
-  // Operator approvals & rejections
+  // ── Admin handlers ──
   const handleApproveOrder = (orderId: string) => {
     setPendingOrders((prev) => prev.filter((o) => o.id !== orderId));
-    sound.playSuccess();
+    try { sound.playSuccess(); } catch {}
   };
 
-  const handleRejectOrder = (orderId: string, reason: string) => {
-    setPendingOrders((prev) => prev.filter((o) => o.id !== orderId));
-    sound.playAlert();
+  const handleRejectOrder = (_orderId: string, _reason: string) => {
+    setPendingOrders((prev) => prev.filter((o) => o.id !== _orderId));
+    try { sound.playAlert(); } catch {}
   };
 
-  const handleToggleKillSwitch = () => {
-    setIsKillSwitchActive((prev) => !prev);
-  };
-
-  // Smooth transition from Banners / Catalog into Guided Recharge Wizard
-  const navigateToRecharge = (gameId?: GameSlug, packageId?: string) => {
-    sound.playClick();
-    if (gameId) {
-      setPreselectedGameId(gameId);
+  // ── Header tab handler (maps tabs to views) ──
+  const handleSetActiveTab = (tab: MainNavTab) => {
+    setActiveTab(tab);
+    if (tab === 'home') {
+      goHome();
+    } else if (tab === 'tournaments') {
+      navigateToTournaments();
+    } else if (tab === 'wallets') {
+      try { sound.playClick(); } catch {}
+      setAppView('wallets');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'tracking') {
+      try { sound.playClick(); } catch {}
+      setAppView('tracking');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else if (tab === 'recharge') {
+      if (!selectedGame) {
+        navigateToProduct('free-fire');
+      } else {
+        setAppView('product');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }
-    if (packageId) {
-      setPreselectedPackageId(packageId);
-    }
-    setActiveTab('recharge');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const navigateToTournaments = () => {
-    sound.playClick();
-    setActiveTab('tournaments');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[#a78bfa]/30 selection:text-[#ede9fe] font-sans antialiased overflow-x-hidden transition-colors duration-250">
-      {/* Fixed Modern Header */}
+    <div className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden transition-colors duration-300">
+      {/* ═══ Sticky Header ═══ */}
       <Header
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        onOpenArchitecture={() => setIsArchitectureOpen(true)}
+        setActiveTab={handleSetActiveTab}
+        onOpenArchitecture={() => {}}
         onOpenCommunity={() => setIsCommunityOpen(true)}
+        onSelectGame={(gameId) => navigateToProduct(gameId)}
+        onOpenAuth={(tab) => {
+          setAuthModalTab(tab);
+          setIsAuthModalOpen(true);
+        }}
+        onOpenAdmin={() => setIsAdminOpen(true)}
         isKillSwitchActive={isKillSwitchActive}
-        userBalance={userBalance}
+        userBalance={profile?.walletBalanceUsd ?? userBalance}
       />
 
-      {/* Main Page Layout with Motion Transitions between Screens */}
-      <main className="pt-24 pb-16">
-        {/* Dynamic Island Status Notification */}
-        <DynamicIsland />
-
+      {/* ═══ Main Content ═══ */}
+      <main className="pt-20 sm:pt-24 pb-8">
         <AnimatePresence mode="wait">
-          {/* =========================================================================
-              PANTALLA 1: INICIO (HOME, BANNERS VIP Y CATÁLOGO DESTACADO)
-              ========================================================================= */}
-          {activeTab === 'home' && (
+          {/* ═══════════════════════════════════════════════
+              HOME — Continuous scroll landing page
+              ═══════════════════════════════════════════════ */}
+          {appView === 'home' && (
             <motion.div
-              key="home-screen"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
+              key="home"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              {/* Hero con headline de recargas en Bolívares / USDT y Banners interactivos */}
+              {/* Hero Banner Carousel */}
               <Hero
-                onScrollToTerminal={navigateToRecharge}
+                onScrollToTerminal={navigateToProduct}
                 onScrollToTournaments={navigateToTournaments}
-                onOpenArchitecture={() => setIsArchitectureOpen(true)}
               />
 
-              {/* Marquee Ticker de Actividad en Vivo */}
-              <MarqueeTicker />
+              {/* Product Catalog — Recomendados + Populares */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-12">
+                <ProductCatalog onSelectGame={(gameId) => navigateToProduct(gameId)} />
+              </div>
 
-              {/* Catálogo de Títulos Oficiales Soportados */}
-              <GameCatalog onSelectGame={(gameId) => navigateToRecharge(gameId)} />
+              {/* Tournaments Section — Portadas + Community Banner */}
+              <div className="max-w-7xl mx-auto px-4 sm:px-8 mt-16">
+                <TournamentSection
+                  onViewTournaments={navigateToTournaments}
+                  onOpenCommunity={() => setIsCommunityOpen(true)}
+                />
+              </div>
             </motion.div>
           )}
 
-          {/* =========================================================================
-              PANTALLA 2: FLUJO DE RECARGA GUIADO PASO A PASO (WIZARD)
-              ========================================================================= */}
-          {activeTab === 'recharge' && (
+          {/* ═══════════════════════════════════════════════
+              PRODUCT DETAIL — Single-page checkout
+              ═══════════════════════════════════════════════ */}
+          {appView === 'product' && selectedGame && (
             <motion.div
-              key="recharge-screen"
-              initial={{ opacity: 0, y: 15 }}
+              key="product"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
-              <StepRechargeWizard
-                initialGameId={preselectedGameId}
-                initialPackageId={preselectedPackageId}
+              <ProductDetailPage
+                game={selectedGame}
+                onGoBack={goHome}
                 onOpenPaymentModal={handleOpenPaymentModal}
                 isKillSwitchActive={isKillSwitchActive}
                 userBalance={userBalance}
+                initialPackageId={selectedPackageId}
               />
             </motion.div>
           )}
 
-          {/* =========================================================================
-              PANTALLA 3: BILLETERAS VIRTUALES (ZINLI VISA, STEAM, SHEIN)
-              ========================================================================= */}
-          {activeTab === 'wallets' && (
+          {/* ═══════════════════════════════════════════════
+              TOURNAMENTS — Full tournament hub
+              ═══════════════════════════════════════════════ */}
+          {appView === 'tournaments' && (
             <motion.div
-              key="wallets-screen"
-              initial={{ opacity: 0, y: 15 }}
+              key="tournaments"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-8">
+                <InteractiveTournamentHub />
+              </div>
+            </motion.div>
+          )}
+
+          {/* ═══════════════════════════════════════════════
+              WALLETS — Zinli, Steam, Shein
+              ═══════════════════════════════════════════════ */}
+          {appView === 'wallets' && (
+            <motion.div
+              key="wallets"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <ZinliWalletSection onOpenPaymentModal={handleOpenPaymentModal} />
             </motion.div>
           )}
 
-          {/* =========================================================================
-              PANTALLA 4: NEXUS ARENA (SISTEMA DE TORNEOS CON SALAS Y BRACKETS)
-              ========================================================================= */}
-          {activeTab === 'tournaments' && (
+          {/* ═══════════════════════════════════════════════
+              TRACKING — Order search
+              ═══════════════════════════════════════════════ */}
+          {appView === 'tracking' && (
             <motion.div
-              key="tournaments-screen"
-              initial={{ opacity: 0, y: 15 }}
+              key="tracking"
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <InteractiveTournamentHub />
-            </motion.div>
-          )}
-
-          {/* =========================================================================
-              PANTALLA 5: MONITOR DE DIVISAS & MOTOR DE MARGEN EN TIEMPO REAL
-              ========================================================================= */}
-          {activeTab === 'rates' && (
-            <motion.div
-              key="rates-screen"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
-            >
-              <LiveRateDashboard onNavigateToRecharge={() => setActiveTab('recharge')} />
-            </motion.div>
-          )}
-
-          {/* =========================================================================
-              PANTALLA 6: RASTREADOR DE ÓRDENES EN TIEMPO REAL
-              ========================================================================= */}
-          {activeTab === 'tracking' && (
-            <motion.div
-              key="tracking-screen"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.25 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <OrderSearchSection
                 orders={pendingOrders}
-                onOpenRecharge={() => setActiveTab('recharge')}
+                onOpenRecharge={goHome}
               />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {/* NEXUS BOT: Asistente interactivo flotante */}
+      {/* ═══ Social Proof Toast (replaces DynamicIsland) ═══ */}
+      <SocialProofToast />
+
+      {/* ═══ NexusBot Widget ═══ */}
       <NexusBotWidget
-        onScrollToRecharge={() => navigateToRecharge()}
+        onScrollToRecharge={goHome}
         onScrollToTournaments={navigateToTournaments}
       />
 
-      {/* Footer */}
+      {/* ═══ Footer ═══ */}
       <Footer
-        onOpenArchitecture={() => setIsArchitectureOpen(true)}
+        onOpenArchitecture={() => {}}
         onOpenCommunity={() => setIsCommunityOpen(true)}
       />
 
-      {/* Modals */}
+      {/* ═══ Modals ═══ */}
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
@@ -348,11 +391,10 @@ export default function App() {
         onClose={() => setIsOrderTrackingOpen(false)}
         onNewRecharge={() => {
           setIsOrderTrackingOpen(false);
-          navigateToRecharge();
+          goHome();
         }}
       />
 
-      {/* Hidden Admin Console - accessible strictly via internal keyboard combo Ctrl+Shift+A */}
       <AdminConsoleModal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
@@ -360,17 +402,19 @@ export default function App() {
         onApproveOrder={handleApproveOrder}
         onRejectOrder={handleRejectOrder}
         isKillSwitchActive={isKillSwitchActive}
-        onToggleKillSwitch={handleToggleKillSwitch}
-      />
-
-      <ArchitectureGuideModal
-        isOpen={isArchitectureOpen}
-        onClose={() => setIsArchitectureOpen(false)}
+        onToggleKillSwitch={() => setIsKillSwitchActive((prev) => !prev)}
       />
 
       <CommunityDiscord
         isOpen={isCommunityOpen}
         onClose={() => setIsCommunityOpen(false)}
+      />
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialTab={authModalTab}
+        onOpenAdminConsole={() => setIsAdminOpen(true)}
       />
     </div>
   );

@@ -1,789 +1,837 @@
 import React, { useState } from 'react';
-import { sound } from '../utils/audio';
-import {
-  Trophy,
-  Users,
-  ShieldCheck,
-  Calendar,
-  Clock,
-  Swords,
-  CheckCircle2,
-  ChevronRight,
-  ChevronLeft,
-  Key,
-  Copy,
-  Check,
-  AlertCircle,
-  HelpCircle,
-  Sparkles,
-  Gamepad2,
-  Share2,
-  Radio,
-  Flame,
-  Award
-} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Trophy, Swords, Users, Clock, Info, Shield, Target, FileText, CheckCircle, Copy, Play } from 'lucide-react';
+import { useCurrency } from '../context/CurrencyContext';
+import { sound } from '../utils/audio';
 
-export interface TournamentWithRoom {
+interface TournamentV2 {
   id: string;
   title: string;
   game: string;
   format: string;
-  prizePoolUsd: number;
-  registeredTeams: number;
+  entryFeeUsd: number;
   maxTeams: number;
-  date: string;
-  time: string;
-  status: 'open' | 'in_progress' | 'completed';
-  customRoomDetails: {
-    roomId: string;
-    password: string;
-    matchMode: string;
-    server: string;
-  };
+  registeredTeams: number;
+  totalPrizePoolUsd: number;
+  prizePerKillUsd: number;
+  platformRakePercent: number;
+  prizes: { position: number; label: string; amountUsd: number }[];
+  status: 'REGISTRATION_OPEN' | 'CHECK_IN' | 'IN_PROGRESS' | 'SCORING' | 'COMPLETED';
+  scheduledAt: string;
+  mapPool: string[];
+  rules: string[];
+  roomCredentials?: { roomId: string; password: string; server: string };
 }
 
-export const LOCAL_TOURNAMENTS: TournamentWithRoom[] = [
+const LOCAL_TOURNAMENTS_V2: TournamentV2[] = [
   {
-    id: 'ff-cup-14',
-    title: 'Free Fire Escuadras Cup #14',
-    game: 'Free Fire SAC',
-    format: 'Duelo de Escuadras 4v4',
-    prizePoolUsd: 150.00,
-    registeredTeams: 28,
+    id: 't1',
+    title: 'Copa Free Fire #15',
+    game: 'Free Fire',
+    format: 'Battle Royale',
+    entryFeeUsd: 3,
     maxTeams: 32,
-    date: 'Hoy 20:00 VET',
-    time: '8:00 PM',
-    status: 'open',
-    customRoomDetails: {
-      roomId: '94810294',
-      password: 'NXFF-2026',
-      matchMode: 'Duelo de Escuadras (Bo3)',
-      server: 'Sudamérica (SAC)',
-    },
+    registeredTeams: 18,
+    totalPrizePoolUsd: 96,
+    prizePerKillUsd: 1,
+    platformRakePercent: 15,
+    prizes: [
+      { position: 1, label: '1er Lugar', amountUsd: 40 },
+      { position: 2, label: '2do Lugar', amountUsd: 20 },
+      { position: 3, label: '3er Lugar', amountUsd: 10 }
+    ],
+    status: 'REGISTRATION_OPEN',
+    scheduledAt: '2026-09-20T20:00:00Z',
+    mapPool: ['Bermuda', 'Purgatorio', 'Kalahari'],
+    rules: [
+      'Sin emuladores permitidos.',
+      'Máximo 4 jugadores por escuadra.',
+      'Inscripción no reembolsable.',
+      'Check-in obligatorio 30 min antes.'
+    ],
+    roomCredentials: { roomId: '9984321', password: 'NEXUS', server: 'EEUU' }
   },
   {
-    id: 'cod-5v5-snd',
-    title: 'Call of Duty: Mobile 5v5 SnD',
+    id: 't2',
+    title: 'Clash Squad 4v4 COD',
     game: 'Call of Duty: Mobile',
-    format: 'Search and Destroy 5v5',
-    prizePoolUsd: 200.00,
-    registeredTeams: 14,
+    format: 'Clash Squad bracket',
+    entryFeeUsd: 5,
     maxTeams: 16,
-    date: 'Mañana 19:30 VET',
-    time: '7:30 PM',
-    status: 'open',
-    customRoomDetails: {
-      roomId: '88204912',
-      password: 'NXCOD-77',
-      matchMode: 'Search & Destroy Competitivo',
-      server: 'Activision Latam',
-    },
+    registeredTeams: 12,
+    totalPrizePoolUsd: 60,
+    prizePerKillUsd: 1,
+    platformRakePercent: 15,
+    prizes: [
+      { position: 1, label: '1er Lugar', amountUsd: 30 },
+      { position: 2, label: '2do Lugar', amountUsd: 15 },
+      { position: 3, label: '3er Lugar', amountUsd: 5 }
+    ],
+    status: 'REGISTRATION_OPEN',
+    scheduledAt: '2026-09-22T19:00:00Z',
+    mapPool: ['Crash', 'Standoff', 'Firing Range'],
+    rules: [
+      'Partidas al mejor de 3 (BO3).',
+      'Sin uso de armas míticas prohibidas.',
+      'Puntualidad obligatoria.'
+    ],
+    roomCredentials: { roomId: 'COD4412', password: 'NEXUS', server: 'Latam' }
   },
   {
-    id: 'ml-starlight-clash',
-    title: 'Mobile Legends 5v5 Starlight Clash',
-    game: 'Mobile Legends: Bang Bang',
-    format: 'Torneo 5v5 Eliminación Directa',
-    prizePoolUsd: 100.00,
+    id: 't3',
+    title: 'Arena MLBB 5v5',
+    game: 'Mobile Legends',
+    format: 'Arena 5v5',
+    entryFeeUsd: 5,
+    maxTeams: 12,
     registeredTeams: 12,
-    maxTeams: 16,
-    date: 'Viernes 21:00 VET',
-    time: '9:00 PM',
-    status: 'open',
-    customRoomDetails: {
-      roomId: '71049281',
-      password: 'NXML-55',
-      matchMode: 'Draft Pick Competitivo 5v5',
-      server: 'Moonton Smile Latam',
-    },
+    totalPrizePoolUsd: 48,
+    prizePerKillUsd: 1,
+    platformRakePercent: 15,
+    prizes: [
+      { position: 1, label: '1er Lugar', amountUsd: 25 },
+      { position: 2, label: '2do Lugar', amountUsd: 10 },
+      { position: 3, label: '3er Lugar', amountUsd: 5 }
+    ],
+    status: 'IN_PROGRESS',
+    scheduledAt: '2026-09-17T18:00:00Z',
+    mapPool: ['Land of Dawn'],
+    rules: [
+      'Draft Pick.',
+      'Tolerancia de 5 minutos al inicio.',
+      'Desconexiones no pausan el juego.'
+    ],
+    roomCredentials: { roomId: 'ML1234', password: 'NEXUS', server: 'Latam' }
   },
+  {
+    id: 't4',
+    title: 'Copa EA Sports FC 24 — 1v1 Cara a Cara',
+    game: 'EA Sports FC 24 Mobile',
+    format: '1v1 Cara a Cara (H2H)',
+    entryFeeUsd: 5,
+    maxTeams: 16,
+    registeredTeams: 12,
+    totalPrizePoolUsd: 80,
+    prizePerKillUsd: 0,
+    platformRakePercent: 15,
+    prizes: [
+      { position: 1, label: '🥇 Campeón', amountUsd: 45 },
+      { position: 2, label: '🥈 Subcampeón', amountUsd: 20 },
+      { position: 3, label: '🥉 3er Lugar', amountUsd: 10 }
+    ],
+    status: 'REGISTRATION_OPEN',
+    scheduledAt: '2026-09-24T19:00:00Z',
+    mapPool: ['Estadio El Libertador', 'Santiago Bernabéu'],
+    rules: [
+      'Modalidad Cara a Cara (H2H) de 6 minutos.',
+      'Partidas de eliminación directa Bo3.',
+      'Plantillas libres hasta 95 OVR.',
+      'En caso de empate se juega prórroga y penales.'
+    ],
+    roomCredentials: { roomId: 'FC24-CHAMP-01', password: 'NEXUS', server: 'América Latina' }
+  }
 ];
 
-export interface InteractiveBracketMatch {
-  id: string;
-  round: string;
-  teamA: { name: string; score: number; kills?: number; isWinner?: boolean };
-  teamB: { name: string; score: number; kills?: number; isWinner?: boolean };
-  status: 'completed' | 'in_progress' | 'pending';
-}
+const MOCK_LEADERBOARD = [
+  { team: 'Nexus Vanguard', kills: 18, position: 1, placementPts: 15 },
+  { team: 'BolivarGangVE', kills: 14, position: 2, placementPts: 12 },
+  { team: 'DragonForce', kills: 11, position: 3, placementPts: 10 },
+  { team: 'PhantomCrew', kills: 9, position: 4, placementPts: 8 },
+  { team: 'ShadowElite', kills: 7, position: 5, placementPts: 6 },
+  { team: 'NeonStrike', kills: 5, position: 6, placementPts: 4 },
+  { team: 'ViperSquad', kills: 4, position: 7, placementPts: 3 },
+  { team: 'StormRiders', kills: 2, position: 8, placementPts: 2 },
+];
+
+const MOCK_SOCCER_LEADERBOARD = [
+  { player: 'Vinicius_VE99', club: 'Real Madrid', pj: 5, pg: 4, pe: 1, pp: 0, gf: 14, gc: 4, dg: '+10', pts: 13, earnings: 45, isTopScorer: true },
+  { player: 'CaracasGamer_10', club: 'Manchester City', pj: 5, pg: 4, pe: 0, pp: 1, gf: 12, gc: 6, dg: '+6', pts: 12, earnings: 20, isTopScorer: false },
+  { player: 'StrikerMaracaibo', club: 'Arsenal FC', pj: 5, pg: 3, pe: 1, pp: 1, gf: 10, gc: 5, dg: '+5', pts: 10, earnings: 10, isTopScorer: false },
+  { player: 'FutBolivar_7', club: 'Inter de Milán', pj: 5, pg: 2, pe: 2, pp: 1, gf: 8, gc: 6, dg: '+2', pts: 8, earnings: 0, isTopScorer: false },
+  { player: 'ElTitan_FC', club: 'Bayern Múnich', pj: 5, pg: 2, pe: 0, pp: 3, gf: 7, gc: 9, dg: '-2', pts: 6, earnings: 0, isTopScorer: false },
+  { player: 'GoldenGoal_99', club: 'Paris Saint-Germain', pj: 5, pg: 1, pe: 1, pp: 3, gf: 5, gc: 11, dg: '-6', pts: 4, earnings: 0, isTopScorer: false },
+  { player: 'DefenseZero', club: 'FC Barcelona', pj: 5, pg: 0, pe: 1, pp: 4, gf: 3, gc: 12, dg: '-9', pts: 1, earnings: 0, isTopScorer: false },
+];
 
 export const InteractiveTournamentHub: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
-  const [selectedTournament, setSelectedTournament] = useState<TournamentWithRoom>(LOCAL_TOURNAMENTS[0]);
+  const { toProtectedBs } = useCurrency();
+  const [selectedTourneyId, setSelectedTourneyId] = useState<string>(LOCAL_TOURNAMENTS_V2[0].id);
+  const [activeTab, setActiveTab] = useState<'INFO' | 'REGISTER' | 'LEADERBOARD' | 'ROOM'>('INFO');
+  const [registeredTourneys, setRegisteredTourneys] = useState<string[]>([]);
+  
+  // Registration form state
+  const [regForm, setRegForm] = useState({
+    teamName: '',
+    clanTag: '',
+    capUid: '',
+    capWa: '',
+    p2Uid: '',
+    p3Uid: '',
+    p4Uid: '',
+    subUid: '',
+    // Soccer specific fields
+    gamerTag: '',
+    selectedClub: 'Real Madrid',
+    platformDevice: 'Móvil (Android / iOS)',
+    paymentMethod: 'saldo'
+  });
 
-  // Team Registration Form
-  const [teamName, setTeamName] = useState('Nexus Vanguard');
-  const [teamTag, setTeamTag] = useState('NVG');
-  const [captainUid, setCaptainUid] = useState('849204812');
-  const [captainDiscord, setCaptainDiscord] = useState('@captain_striker');
-  const [player2Uid, setPlayer2Uid] = useState('918237190');
-  const [player3Uid, setPlayer3Uid] = useState('748192018');
-  const [player4Uid, setPlayer4Uid] = useState('691048201');
-  const [isRegistered, setIsRegistered] = useState(false);
+  const selectedTourney = LOCAL_TOURNAMENTS_V2.find(t => t.id === selectedTourneyId) || LOCAL_TOURNAMENTS_V2[0];
+  const isRegistered = registeredTourneys.includes(selectedTourneyId);
+  const isSoccer = selectedTourney.prizePerKillUsd === 0 || selectedTourney.game.toLowerCase().includes('fc');
 
-  // Custom Room Connection Simulation
-  const [roomStatus, setRoomStatus] = useState<'waiting' | 'ready' | 'in_game' | 'finished'>('ready');
-  const [copiedRoomId, setCopiedRoomId] = useState(false);
-  const [copiedPassword, setCopiedPassword] = useState(false);
-
-  // Dynamic Fixture & Live Match Scores
-  const [matches, setMatches] = useState<InteractiveBracketMatch[]>([
-    {
-      id: 'm1',
-      round: 'Cuartos de Final',
-      teamA: { name: 'Nexus Vanguard', score: 3, kills: 14, isWinner: true },
-      teamB: { name: 'Caracas E-Sports', score: 1, kills: 8, isWinner: false },
-      status: 'completed',
-    },
-    {
-      id: 'm2',
-      round: 'Cuartos de Final',
-      teamA: { name: 'Shadow Hunters', score: 3, kills: 16, isWinner: true },
-      teamB: { name: 'Vortex Latam', score: 2, kills: 12, isWinner: false },
-      status: 'completed',
-    },
-    {
-      id: 'm3',
-      round: 'Semifinal',
-      teamA: { name: 'Nexus Vanguard', score: 2, kills: 11, isWinner: undefined },
-      teamB: { name: 'Shadow Hunters', score: 1, kills: 9, isWinner: undefined },
-      status: 'in_progress',
-    },
-    {
-      id: 'm4',
-      round: 'Gran Final',
-      teamA: { name: 'Por Definir', score: 0, isWinner: undefined },
-      teamB: { name: 'Titanes del Zulia', score: 0, isWinner: undefined },
-      status: 'pending',
-    },
-  ]);
-
-  const handleCopy = (text: string, type: 'id' | 'pass') => {
-    sound.playClick();
-    navigator.clipboard.writeText(text);
-    if (type === 'id') {
-      setCopiedRoomId(true);
-      setTimeout(() => setCopiedRoomId(false), 1800);
-    } else {
-      setCopiedPassword(true);
-      setTimeout(() => setCopiedPassword(false), 1800);
-    }
+  const handleSelectTourney = (id: string) => {
+    try { sound.playClick(); } catch (e) {}
+    setSelectedTourneyId(id);
+    setActiveTab('INFO');
   };
 
-  const handleRegisterTeam = (e: React.FormEvent) => {
+  const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    sound.playSuccess();
-    setIsRegistered(true);
-    setCurrentStep(3); // Go to Room Credentials
+    try { sound.playSuccess(); } catch (e) {}
+    setRegisteredTourneys(prev => [...prev, selectedTourneyId]);
   };
 
-  const handleSimulateScoreUpdate = () => {
-    sound.playClick();
-    setMatches((prev) =>
-      prev.map((m) => {
-        if (m.id === 'm3') {
-          return {
-            ...m,
-            teamA: { ...m.teamA, score: 3, kills: (m.teamA.kills || 11) + 2, isWinner: true },
-            teamB: { ...m.teamB, score: 1, isWinner: false },
-            status: 'completed',
-          };
-        }
-        if (m.id === 'm4') {
-          return {
-            ...m,
-            teamA: { name: 'Nexus Vanguard', score: 1, kills: 4, isWinner: undefined },
-            status: 'in_progress',
-          };
-        }
-        return m;
-      })
-    );
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    try { sound.playClick(); } catch (e) {}
+    alert('Copiado al portapapeles');
   };
-
-  const STEPS = [
-    { num: 1, title: 'Torneo & Juego', desc: 'Selección de disciplina' },
-    { num: 2, title: 'Inscripción Escuadra', desc: 'UIDs de jugadores' },
-    { num: 3, title: 'Conexión de Sala', desc: 'Room ID & Contraseña' },
-    { num: 4, title: 'Brackets & Fixture', desc: 'Seguimiento en vivo' },
-  ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 py-8 space-y-8 animate-fadeIn" id="torneos-hub">
-      {/* Title & Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--border-color)]">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#a78bfa] animate-pulse"></span>
-            <span className="text-xs font-mono uppercase tracking-widest text-[#a78bfa] font-bold">
-              Nexus Esports Circuit • Temporada Competitiva
-            </span>
-          </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-primary)] mt-1 tracking-tight">
-            Arena de Torneos & Conexión de Salas
-          </h2>
-          <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1 max-w-2xl">
-            Flujo guiado para competir por premios en USDT y Bolívares. Creación de salas de juego con árbitro asistido y brackets actualizados en tiempo real.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2 bg-[var(--bg-card)] px-4 py-2 rounded-2xl border border-[var(--border-color)]">
-          <Trophy className="w-4 h-4 text-[#f59e0b]" />
-          <span className="text-xs font-mono font-bold text-[var(--text-primary)]">
-            Pozo Total Activo: ${LOCAL_TOURNAMENTS.reduce((acc, t) => acc + t.prizePoolUsd, 0)} USDT
-          </span>
-        </div>
-      </div>
-
-      {/* Stepper Navigation */}
-      <div className="p-4 rounded-3xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-lg">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {STEPS.map((s) => {
-            const isCompleted = currentStep > s.num;
-            const isCurrent = currentStep === s.num;
-
-            return (
-              <button
-                key={s.num}
-                type="button"
-                onClick={() => {
-                  sound.playClick();
-                  setCurrentStep(s.num);
-                }}
-                className={`p-3 rounded-2xl text-left transition-all cursor-pointer border ${
-                  isCurrent
-                    ? 'bg-[#a78bfa] text-[#09090b] border-[#a78bfa] shadow-md font-bold'
-                    : isCompleted
-                    ? 'bg-[#34d399]/10 border-[#34d399]/30 text-[#34d399]'
-                    : 'bg-[var(--bg-elevated)] border-[var(--border-color)] text-[var(--text-secondary)]'
-                }`}
-              >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] font-mono font-bold uppercase">Paso {s.num}</span>
-                  {isCompleted && <Check className="w-3.5 h-3.5" />}
-                </div>
-                <h4 className="text-xs font-bold truncate">{s.title}</h4>
-                <span className={`text-[10px] block truncate ${isCurrent ? 'text-[#09090b]/80' : 'text-[var(--text-muted)]'}`}>
-                  {s.desc}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* STEP CONTAINER CON MOTION */}
-      <div className="relative min-h-[460px]">
-        <AnimatePresence mode="wait">
-          {/* =========================================================================
-              PASO 1: SELECCIÓN DE TORNEO Y MODALIDAD
-              ========================================================================= */}
-          {currentStep === 1 && (
+    <div className="w-full max-w-7xl mx-auto p-4 flex flex-col lg:flex-row gap-6 text-[var(--text-primary)]">
+      
+      {/* Left Panel: Tournament List */}
+      <div className="w-full lg:w-1/3 flex flex-col gap-4">
+        <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+          <Trophy className="w-6 h-6 text-[var(--accent)]" />
+          Torneos Disponibles
+        </h2>
+        
+        <div className="flex flex-col gap-4">
+          {LOCAL_TOURNAMENTS_V2.map((tourney) => (
             <motion.div
-              key="step-tourney-1"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.22 }}
-              className="space-y-6"
+              key={tourney.id}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleSelectTourney(tourney.id)}
+              className={`relative cursor-pointer rounded-2xl p-5 border transition-colors ${
+                selectedTourneyId === tourney.id
+                  ? 'bg-[var(--bg-elevated)] border-[var(--accent)] shadow-[0_0_15px_rgba(var(--accent-rgb),0.15)]'
+                  : 'bg-[var(--bg-surface)] border-[var(--border-default)] hover:border-[var(--text-secondary)]'
+              }`}
             >
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {LOCAL_TOURNAMENTS.map((t) => {
-                  const isSelected = selectedTournament.id === t.id;
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <h3 className="font-bold text-lg leading-tight">{tourney.title}</h3>
+                  <div className="text-sm text-[var(--text-secondary)] flex items-center gap-1 mt-1">
+                    <Swords className="w-3.5 h-3.5" />
+                    {tourney.game} • {tourney.format}
+                  </div>
+                </div>
+                <div className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+                  tourney.status === 'REGISTRATION_OPEN' ? 'bg-green-500/20 text-green-400' : 
+                  tourney.status === 'IN_PROGRESS' ? 'bg-yellow-500/20 text-yellow-400' : 
+                  'bg-gray-500/20 text-gray-400'
+                }`}>
+                  {tourney.status === 'REGISTRATION_OPEN' ? 'ABIERTO' : 
+                   tourney.status === 'IN_PROGRESS' ? 'EN CURSO' : 'FINALIZADO'}
+                </div>
+              </div>
 
-                  return (
-                    <div
-                      key={t.id}
-                      onClick={() => {
-                        sound.playClick();
-                        setSelectedTournament(t);
-                      }}
-                      className={`p-6 rounded-3xl bg-[var(--bg-card)] border-2 transition-all cursor-pointer flex flex-col justify-between shadow-xl relative overflow-hidden ${
-                        isSelected
-                          ? 'border-[#a78bfa] ring-2 ring-[#a78bfa]/30 bg-[#a78bfa]/5'
-                          : 'border-[var(--border-color)] hover:border-[#a78bfa]/40'
-                      }`}
-                    >
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between">
-                          <span className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-[#a78bfa]/15 text-[#a78bfa] font-bold">
-                            {t.game}
-                          </span>
-                          <span className="text-[10px] font-mono text-[#34d399] font-bold flex items-center gap-1">
-                            <Radio className="w-3 h-3 text-[#34d399] animate-pulse" />
-                            {t.status === 'open' ? 'Inscripciones Abiertas' : 'En Curso'}
-                          </span>
-                        </div>
+              {tourney.prizePerKillUsd > 0 ? (
+                <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-2 mb-4 flex items-center justify-center gap-2">
+                  <Target className="w-4 h-4 text-yellow-400" />
+                  <span className="text-yellow-400 font-bold text-sm">$1.00 por Kill</span>
+                </div>
+              ) : (
+                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-2 mb-4 flex items-center justify-center gap-2">
+                  <Trophy className="w-4 h-4 text-emerald-400" />
+                  <span className="text-emerald-400 font-bold text-sm">⚽ Bota de Oro & Premio al Campeón</span>
+                </div>
+              )}
 
-                        <div>
-                          <h4 className="text-base font-extrabold text-[var(--text-primary)]">{t.title}</h4>
-                          <span className="text-xs text-[var(--text-muted)] font-mono block mt-0.5">
-                            Modalidad: {t.format}
-                          </span>
-                        </div>
-
-                        <div className="p-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] space-y-1 text-xs font-mono">
-                          <div className="flex justify-between">
-                            <span className="text-[var(--text-muted)]">Pozo a Repartir:</span>
-                            <span className="text-[#f59e0b] font-bold">${t.prizePoolUsd} USDT</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-[var(--text-muted)]">Cupos Escuadras:</span>
-                            <span className="text-[var(--text-primary)]">{t.registeredTeams}/{t.maxTeams}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-[var(--text-muted)]">Entrada:</span>
-                            <span className="text-[#34d399] font-bold">Gratis / Free Entry</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="mt-5 pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
-                        <span className="text-[11px] font-mono text-[var(--text-muted)]">
-                          {t.date} • {t.time}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            sound.playClick();
-                            setSelectedTournament(t);
-                            setCurrentStep(2);
-                          }}
-                          className="px-4 py-2 rounded-xl bg-[#a78bfa] text-[#09090b] font-bold text-xs flex items-center gap-1 hover:bg-[#c4b5fd] transition-all"
-                        >
-                          <span>Inscribir Escuadra</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="flex flex-col">
+                  <span className="text-[var(--text-secondary)] text-xs uppercase tracking-wider">Prize Pool</span>
+                  <span className="font-bold text-[var(--accent)]">${tourney.totalPrizePoolUsd.toFixed(2)}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-[var(--text-secondary)] text-xs uppercase tracking-wider">Entrada</span>
+                  <span className="font-bold">${tourney.entryFeeUsd.toFixed(2)}</span>
+                </div>
+                <div className="flex flex-col col-span-2">
+                  <span className="text-[var(--text-secondary)] text-xs uppercase tracking-wider">Cupos</span>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 bg-[var(--bg-primary)] h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-[var(--accent)] rounded-full"
+                        style={{ width: `${(tourney.registeredTeams / tourney.maxTeams) * 100}%` }}
+                      />
                     </div>
-                  );
-                })}
+                    <span className="font-mono text-xs">{tourney.registeredTeams}/{tourney.maxTeams}</span>
+                  </div>
+                </div>
               </div>
             </motion.div>
-          )}
+          ))}
+        </div>
+      </div>
 
-          {/* =========================================================================
-              PASO 2: FORMULARIO DE INSCRIPCIÓN DE ESCUADRA
-              ========================================================================= */}
-          {currentStep === 2 && (
-            <motion.div
-              key="step-tourney-2"
-              initial={{ opacity: 0, x: 25 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -25 }}
-              transition={{ duration: 0.22 }}
-              className="space-y-6"
+      {/* Right Panel: Tournament Details */}
+      <div className="w-full lg:w-2/3 flex flex-col bg-[var(--bg-surface)] border border-[var(--border-default)] rounded-2xl overflow-hidden">
+        
+        {/* Header */}
+        <div className="p-6 border-b border-[var(--border-default)] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[var(--bg-elevated)]">
+          <div>
+            <h1 className="text-2xl font-bold">{selectedTourney.title}</h1>
+            <div className="flex items-center gap-3 text-[var(--text-secondary)] text-sm mt-1">
+              <span className="flex items-center gap-1"><Swords className="w-4 h-4" /> {selectedTourney.format}</span>
+              <span className="flex items-center gap-1"><Users className="w-4 h-4" /> {selectedTourney.registeredTeams}/{selectedTourney.maxTeams} Escuadras</span>
+              <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> {new Date(selectedTourney.scheduledAt).toLocaleString('es-VE', { dateStyle: 'short', timeStyle: 'short' })}</span>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-[var(--accent)]">${selectedTourney.totalPrizePoolUsd.toFixed(2)}</div>
+            <div className="text-xs text-[var(--text-secondary)] uppercase tracking-wider">Prize Pool Total</div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex overflow-x-auto border-b border-[var(--border-default)] scrollbar-hide">
+          <button
+            onClick={() => setActiveTab('INFO')}
+            className={`px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors border-b-2 ${activeTab === 'INFO' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+          >
+            Info & Premios
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('REGISTER')}
+            className={`px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors border-b-2 ${activeTab === 'REGISTER' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+          >
+            Inscripción
+          </button>
+
+          <button
+            onClick={() => setActiveTab('LEADERBOARD')}
+            className={`px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors border-b-2 ${activeTab === 'LEADERBOARD' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
+          >
+            Tabla de Posiciones
+          </button>
+
+          {isRegistered && (
+            <button
+              onClick={() => setActiveTab('ROOM')}
+              className={`px-6 py-4 font-semibold text-sm whitespace-nowrap transition-colors border-b-2 ${activeTab === 'ROOM' ? 'border-[var(--accent)] text-[var(--text-primary)]' : 'border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]'}`}
             >
-              <form
-                onSubmit={handleRegisterTeam}
-                className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-xl space-y-6"
+              Sala de Juego
+            </button>
+          )}
+        </div>
+
+        {/* Tab Content */}
+        <div className="p-6 flex-1 overflow-y-auto">
+          <AnimatePresence mode="wait">
+            {activeTab === 'INFO' && (
+              <motion.div
+                key="info"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-8"
               >
+                {/* Prize Breakdown */}
                 <div>
-                  <span className="text-xs font-mono uppercase font-bold text-[#a78bfa]">
-                    Inscripción Oficial • {selectedTournament.title}
-                  </span>
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-[var(--text-primary)] mt-1">
-                    Registra tu Escuadra Competitiva
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <Trophy className="w-5 h-5 text-[var(--accent)]" /> 
+                    Distribución de Premios
                   </h3>
-                  <p className="text-xs sm:text-sm text-[var(--text-secondary)] mt-1">
-                    Ingresa los UIDs oficiales de tus 4 jugadores para que el árbitro pueda verificar los accesos a la sala personalizada.
+                  <div className="bg-[var(--bg-primary)] rounded-xl border border-[var(--border-default)] overflow-hidden">
+                    <div className="divide-y divide-[var(--border-default)]">
+                      {selectedTourney.prizes.map((prize) => (
+                        <div key={prize.position} className="flex justify-between items-center p-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-2xl">
+                              {prize.position === 1 ? '🥇' : prize.position === 2 ? '🥈' : '🥉'}
+                            </span>
+                            <span className="font-semibold">{prize.label}</span>
+                          </div>
+                          <span className="font-bold text-lg">${prize.amountUsd.toFixed(2)}</span>
+                        </div>
+                      ))}
+                      <div className="flex justify-between items-center p-4 bg-yellow-500/10">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">💀</span>
+                          <span className="font-semibold text-yellow-400">Por cada eliminación confirmada</span>
+                        </div>
+                        <span className="font-bold text-lg text-yellow-400">${selectedTourney.prizePerKillUsd.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-sm text-[var(--text-secondary)] mt-3 flex items-center gap-1.5">
+                    <Info className="w-4 h-4" />
+                    Nexus retiene {selectedTourney.platformRakePercent}% como comisión de plataforma (ya deducido del prize pool).
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      Nombre de la Escuadra / Clan
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={teamName}
-                      onChange={(e) => setTeamName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      Tag de Clan (3-5 letras)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={teamTag}
-                      onChange={(e) => setTeamTag(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      UID Capitán (Titular)
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={captainUid}
-                      onChange={(e) => setCaptainUid(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      Discord / Telegram Capitán
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={captainDiscord}
-                      onChange={(e) => setCaptainDiscord(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      UID Jugador 2
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={player2Uid}
-                      onChange={(e) => setPlayer2Uid(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-bold uppercase font-mono text-[var(--text-secondary)] block mb-1">
-                      UID Jugador 3
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={player3Uid}
-                      onChange={(e) => setPlayer3Uid(e.target.value)}
-                      className="w-full px-4 py-3 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] text-sm font-mono text-[var(--text-primary)] focus:outline-none focus:border-[#a78bfa]"
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-4 flex items-center justify-between border-t border-[var(--border-color)]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      setCurrentStep(1);
-                    }}
-                    className="px-5 py-3 rounded-2xl bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold text-xs flex items-center gap-1.5"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Volver a Torneos</span>
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="px-6 py-3.5 rounded-2xl bg-[#a78bfa] text-[#09090b] font-bold text-xs shadow-lg hover:bg-[#c4b5fd] transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>Completar Registro & Generar Sala</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          )}
-
-          {/* =========================================================================
-              PASO 3: CONECTOR Y GENERADOR DE SALA OFICIAL (CUSTOM ROOM)
-              ========================================================================= */}
-          {currentStep === 3 && (
-            <motion.div
-              key="step-tourney-3"
-              initial={{ opacity: 0, x: 25 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -25 }}
-              transition={{ duration: 0.22 }}
-              className="space-y-6"
-            >
-              {/* Tarjeta de Credenciales de Sala */}
-              <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border-2 border-[#34d399]/40 shadow-2xl space-y-6 relative overflow-hidden">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#34d399] animate-ping"></span>
-                      <span className="text-xs font-mono text-[#34d399] font-bold uppercase tracking-wider">
-                        Sala Creada en Servidor Oficial • {selectedTournament.game}
-                      </span>
-                    </div>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-[var(--text-primary)] mt-1">
-                      Credenciales de Acceso para la Escuadra
-                    </h3>
-                  </div>
-
-                  <span className="px-3 py-1 rounded-full bg-[#34d399]/20 text-[#34d399] text-xs font-mono font-bold self-start sm:self-auto">
-                    ESTADO: SALA LISTA (8/8)
-                  </span>
-                </div>
-
-                {/* Bloque de ID de Sala y Contraseña Copiable */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase block">ID de Sala (Room ID)</span>
-                      <span className="text-xl font-extrabold font-mono text-[var(--text-primary)]">
-                        {selectedTournament.customRoomDetails.roomId}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(selectedTournament.customRoomDetails.roomId, 'id')}
-                      className="p-2 rounded-xl bg-[var(--bg-card)] hover:bg-[#a78bfa] hover:text-[#09090b] text-[var(--text-secondary)] transition-all cursor-pointer"
-                      title="Copiar Room ID"
-                    >
-                      {copiedRoomId ? <Check className="w-4 h-4 text-[#34d399]" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                  </div>
-
-                  <div className="p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] flex items-center justify-between">
-                    <div>
-                      <span className="text-[10px] font-mono text-[var(--text-muted)] uppercase block">Contraseña de Sala</span>
-                      <span className="text-xl font-extrabold font-mono text-[#a78bfa]">
-                        {selectedTournament.customRoomDetails.password}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleCopy(selectedTournament.customRoomDetails.password, 'pass')}
-                      className="p-2 rounded-xl bg-[var(--bg-card)] hover:bg-[#a78bfa] hover:text-[#09090b] text-[var(--text-secondary)] transition-all cursor-pointer"
-                      title="Copiar Contraseña"
-                    >
-                      {copiedPassword ? <Check className="w-4 h-4 text-[#34d399]" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Explicación Técnica de la Integración (Respuesta exacta a la duda del cliente) */}
-                <div className="p-4 rounded-2xl bg-[#a78bfa]/10 border border-[#a78bfa]/30 space-y-2">
-                  <div className="flex items-center gap-2 text-xs font-bold text-[#a78bfa]">
-                    <HelpCircle className="w-4 h-4" />
-                    <span>¿Cómo se conectan las salas de juego con nuestra plataforma web?</span>
-                  </div>
-                  <p className="text-xs text-[var(--text-secondary)] leading-relaxed">
-                    En videojuegos móviles (Free Fire, COD Mobile, MLBB), las salas personalizadas requieren un anfitrión dentro del juego. Nuestra plataforma opera con el modelo <strong>Árbitro / Bot Host Asistido</strong>: el árbitro de Nexus crea la sala con la tarjeta oficial de torneo, publica las credenciales encriptadas en esta pantalla para los capitanes verificados, y valida la tabla de bajas (Kills) al finalizar la partida para avanzar automáticamente las llaves del fixture.
-                  </p>
-                </div>
-
-                {/* Reglas de la Partida */}
-                <div className="p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-color)] space-y-2 text-xs">
-                  <h4 className="font-bold text-[var(--text-primary)] uppercase font-mono text-[11px]">
-                    Reglas Oficiales del Encuentro:
-                  </h4>
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[var(--text-secondary)]">
-                    <li className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#34d399]"></span>
-                      Modo: {selectedTournament.customRoomDetails.matchMode}
-                    </li>
-                    <li className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#34d399]"></span>
-                      Servidor: {selectedTournament.customRoomDetails.server}
-                    </li>
-                    <li className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#34d399]"></span>
-                      Tolerancia de espera: 5 minutos máximo
-                    </li>
-                    <li className="flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#34d399]"></span>
-                      Prohibido emulador en torneos móvil exclusivo
+                {/* Rules */}
+                <div>
+                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-[var(--accent)]" /> 
+                    Reglas y Formato
+                  </h3>
+                  <ul className="space-y-3">
+                    {selectedTourney.rules.map((rule, idx) => (
+                      <li key={idx} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
+                        <div className="min-w-[1.5rem] flex justify-center mt-0.5">
+                          <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+                        </div>
+                        {rule}
+                      </li>
+                    ))}
+                    <li className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
+                      <div className="min-w-[1.5rem] flex justify-center mt-0.5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)]" />
+                      </div>
+                      Mapas: {selectedTourney.mapPool.join(', ')}
                     </li>
                   </ul>
                 </div>
+              </motion.div>
+            )}
 
-                <div className="pt-4 flex items-center justify-between border-t border-[var(--border-color)]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      setCurrentStep(2);
-                    }}
-                    className="px-5 py-3 rounded-2xl bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold text-xs flex items-center gap-1.5"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Editar Escuadra</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      setCurrentStep(4);
-                    }}
-                    className="px-6 py-3.5 rounded-2xl bg-[#a78bfa] text-[#09090b] font-bold text-xs shadow-lg hover:bg-[#c4b5fd] transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>Ver Fixture & Marcador en Vivo</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* =========================================================================
-              PASO 4: FIXTURE / BRACKETS Y SEGUIMIENTO DE PARTIDAS EN VIVO
-              ========================================================================= */}
-          {currentStep === 4 && (
-            <motion.div
-              key="step-tourney-4"
-              initial={{ opacity: 0, x: 25 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -25 }}
-              transition={{ duration: 0.22 }}
-              className="space-y-6"
-            >
-              <div className="p-6 sm:p-8 rounded-3xl bg-[var(--bg-card)] border border-[var(--border-color)] shadow-xl space-y-6">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-xs font-mono uppercase font-bold text-[#34d399] flex items-center gap-1.5">
-                      <Radio className="w-3 h-3 text-[#34d399] animate-pulse" /> Marcador en Tiempo Real
-                    </span>
-                    <h3 className="text-xl sm:text-2xl font-extrabold text-[var(--text-primary)] mt-1">
-                      Fixture Oficial & Avance de Rondas
-                    </h3>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={handleSimulateScoreUpdate}
-                    className="px-4 py-2 rounded-2xl bg-[var(--bg-elevated)] hover:bg-[#a78bfa] hover:text-[#09090b] text-[var(--text-primary)] text-xs font-bold border border-[var(--border-color)] transition-all flex items-center gap-1.5 cursor-pointer self-start sm:self-auto"
-                  >
-                    <Flame className="w-3.5 h-3.5 text-[#f59e0b]" />
-                    <span>Simular Actualización de Kills</span>
-                  </button>
-                </div>
-
-                {/* Brackets Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {matches.map((match) => (
-                    <div
-                      key={match.id}
-                      className={`p-5 rounded-2xl border transition-all ${
-                        match.status === 'in_progress'
-                          ? 'bg-[#a78bfa]/10 border-[#a78bfa] shadow-lg ring-1 ring-[#a78bfa]'
-                          : match.status === 'completed'
-                          ? 'bg-[var(--bg-elevated)] border-[#34d399]/30'
-                          : 'bg-[var(--bg-elevated)] border-[var(--border-color)] opacity-70'
-                      }`}
+            {activeTab === 'REGISTER' && (
+              <motion.div
+                key="register"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {isRegistered ? (
+                  <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                    <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center text-green-500 mb-2">
+                      <CheckCircle className="w-8 h-8" />
+                    </div>
+                    <h3 className="text-2xl font-bold">¡Inscripción Exitosa!</h3>
+                    <p className="text-[var(--text-secondary)] max-w-md">
+                      Tu escuadra ha sido registrada correctamente. Tienes el <strong>Slot #12</strong> reservado.
+                    </p>
+                    <button
+                      onClick={() => setActiveTab('ROOM')}
+                      className="mt-6 bg-[var(--accent)] text-white px-6 py-3 rounded-xl font-bold hover:bg-opacity-90 transition-all flex items-center gap-2"
                     >
-                      <div className="flex items-center justify-between mb-3 text-xs font-mono">
-                        <span className="font-bold text-[var(--text-primary)]">{match.round}</span>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                            match.status === 'in_progress'
-                              ? 'bg-[#a78bfa] text-[#09090b] animate-pulse'
-                              : match.status === 'completed'
-                              ? 'bg-[#34d399]/20 text-[#34d399]'
-                              : 'bg-[var(--bg-card)] text-[var(--text-muted)]'
-                          }`}
+                      Ir a la Sala de Juego
+                      <Play className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : isSoccer ? (
+                  /* ⚽ Formulario Especializado para EA Sports FC 24 / Fútbol 1v1 */
+                  <form onSubmit={handleRegister} className="space-y-6">
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3">
+                      <Trophy className="w-5 h-5 text-emerald-400 shrink-0" />
+                      <div>
+                        <h4 className="font-bold text-emerald-400 text-sm">Inscripción Individual 1v1 (Cara a Cara)</h4>
+                        <p className="text-xs text-[var(--text-secondary)]">Formato competitivo oficial. No requiere escuadra; juegas directamente tus partidos 1 contra 1.</p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">Gamertag / EA ID Oficial *</label>
+                        <input 
+                          required
+                          type="text" 
+                          value={regForm.gamerTag}
+                          onChange={(e) => setRegForm({...regForm, gamerTag: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Ej. Vinicius_VE99 o CaracasGamer"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">WhatsApp de Coordinación *</label>
+                        <input 
+                          required
+                          type="text" 
+                          value={regForm.capWa}
+                          onChange={(e) => setRegForm({...regForm, capWa: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="+58 412 1234567"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">Club / Plantilla a Utilizar</label>
+                        <input 
+                          type="text" 
+                          value={regForm.selectedClub}
+                          onChange={(e) => setRegForm({...regForm, selectedClub: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Ej. Real Madrid, Man City o Plantilla UT"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">Dispositivo / Consola</label>
+                        <select 
+                          value={regForm.platformDevice}
+                          onChange={(e) => setRegForm({...regForm, platformDevice: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors cursor-pointer"
                         >
-                          {match.status === 'in_progress'
-                            ? 'EN JUEGO'
-                            : match.status === 'completed'
-                            ? 'FINALIZADA'
-                            : 'PENDIENTE'}
-                        </span>
+                          <option value="Móvil (Android / iOS)">Móvil (Android / iOS)</option>
+                          <option value="PlayStation 5">PlayStation 5</option>
+                          <option value="Xbox Series X/S">Xbox Series X/S</option>
+                          <option value="PC">PC (EA App / Steam)</option>
+                        </select>
                       </div>
+                    </div>
 
-                      {/* Team A */}
-                      <div className="flex items-center justify-between py-2 border-b border-[var(--border-color)] text-xs font-mono">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`font-bold ${
-                              match.teamA.isWinner
-                                ? 'text-[#34d399]'
-                                : match.teamA.isWinner === false
-                                ? 'text-[var(--text-muted)] line-through'
-                                : 'text-[var(--text-primary)]'
-                            }`}
-                          >
-                            {match.teamA.name}
-                          </span>
-                          {match.teamA.isWinner && <Award className="w-3.5 h-3.5 text-[#34d399]" />}
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {match.teamA.kills !== undefined && (
-                            <span className="text-[10px] text-[var(--text-muted)]">
-                              {match.teamA.kills} Kills
-                            </span>
-                          )}
-                          <span className="font-extrabold text-sm text-[var(--text-primary)]">
-                            {match.teamA.score}
-                          </span>
-                        </div>
+                    <div className="border-t border-[var(--border-default)] pt-5">
+                      <h4 className="font-bold mb-3">Método de Pago</h4>
+                      <select 
+                        value={regForm.paymentMethod}
+                        onChange={(e) => setRegForm({...regForm, paymentMethod: e.target.value})}
+                        className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--accent)] transition-colors cursor-pointer"
+                      >
+                        <option value="saldo">Saldo Nexus (${selectedTourney.entryFeeUsd.toFixed(2)})</option>
+                        <option value="binance">Binance Pay (${selectedTourney.entryFeeUsd.toFixed(2)} USDT)</option>
+                        <option value="pagomovil">Pago Móvil (Bs. {toProtectedBs(selectedTourney.entryFeeUsd).toFixed(2)})</option>
+                      </select>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={selectedTourney.status !== 'REGISTRATION_OPEN'}
+                      className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg"
+                    >
+                      {selectedTourney.status === 'REGISTRATION_OPEN' ? `Inscribirme en Copa FC 24 ($${selectedTourney.entryFeeUsd.toFixed(2)})` : 'Inscripciones Cerradas'}
+                    </button>
+                  </form>
+                ) : (
+                  /* 💥 Formulario Battle Royale / Escuadras (Free Fire, COD, etc.) */
+                  <form onSubmit={handleRegister} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">Nombre de Escuadra</label>
+                        <input 
+                          required
+                          type="text" 
+                          value={regForm.teamName}
+                          onChange={(e) => setRegForm({...regForm, teamName: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Ej. Nexus Vanguard"
+                        />
                       </div>
+                      <div>
+                        <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">Tag del Clan (3-5 chars)</label>
+                        <input 
+                          required
+                          type="text" 
+                          maxLength={5}
+                          minLength={3}
+                          value={regForm.clanTag}
+                          onChange={(e) => setRegForm({...regForm, clanTag: e.target.value})}
+                          className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          placeholder="Ej. NXS"
+                        />
+                      </div>
+                    </div>
 
-                      {/* Team B */}
-                      <div className="flex items-center justify-between py-2 text-xs font-mono">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`font-bold ${
-                              match.teamB.isWinner
-                                ? 'text-[#34d399]'
-                                : match.teamB.isWinner === false
-                                ? 'text-[var(--text-muted)] line-through'
-                                : 'text-[var(--text-primary)]'
-                            }`}
-                          >
-                            {match.teamB.name}
-                          </span>
-                          {match.teamB.isWinner && <Award className="w-3.5 h-3.5 text-[#34d399]" />}
+                    <div className="border-t border-[var(--border-default)] pt-6">
+                      <h4 className="font-bold mb-4 flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-[var(--accent)]" /> Datos del Capitán
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">UID del Juego</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={regForm.capUid}
+                            onChange={(e) => setRegForm({...regForm, capUid: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                            placeholder="Ej. 123456789"
+                          />
                         </div>
-                        <div className="flex items-center gap-3">
-                          {match.teamB.kills !== undefined && (
-                            <span className="text-[10px] text-[var(--text-muted)]">
-                              {match.teamB.kills} Kills
-                            </span>
-                          )}
-                          <span className="font-extrabold text-sm text-[var(--text-primary)]">
-                            {match.teamB.score}
-                          </span>
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">WhatsApp</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={regForm.capWa}
+                            onChange={(e) => setRegForm({...regForm, capWa: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                            placeholder="+58 412 1234567"
+                          />
                         </div>
                       </div>
                     </div>
-                  ))}
+
+                    <div className="border-t border-[var(--border-default)] pt-6">
+                      <h4 className="font-bold mb-4">Integrantes</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">UID Jugador 2</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={regForm.p2Uid}
+                            onChange={(e) => setRegForm({...regForm, p2Uid: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">UID Jugador 3</label>
+                          <input 
+                            required
+                            type="text" 
+                            value={regForm.p3Uid}
+                            onChange={(e) => setRegForm({...regForm, p3Uid: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">UID Jugador 4 (Opcional)</label>
+                          <input 
+                            type="text" 
+                            value={regForm.p4Uid}
+                            onChange={(e) => setRegForm({...regForm, p4Uid: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-semibold mb-1.5 text-[var(--text-secondary)]">UID Suplente (Opcional)</label>
+                          <input 
+                            type="text" 
+                            value={regForm.subUid}
+                            onChange={(e) => setRegForm({...regForm, subUid: e.target.value})}
+                            className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-2.5 focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-t border-[var(--border-default)] pt-6">
+                      <h4 className="font-bold mb-4">Método de Pago</h4>
+                      <select 
+                        value={regForm.paymentMethod}
+                        onChange={(e) => setRegForm({...regForm, paymentMethod: e.target.value})}
+                        className="w-full bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl px-4 py-3 focus:outline-none focus:border-[var(--accent)] transition-colors cursor-pointer"
+                      >
+                        <option value="saldo">Saldo Nexus (${selectedTourney.entryFeeUsd.toFixed(2)})</option>
+                        <option value="binance">Binance Pay (${selectedTourney.entryFeeUsd.toFixed(2)} USDT)</option>
+                        <option value="pagomovil">Pago Móvil (Bs. {toProtectedBs(selectedTourney.entryFeeUsd).toFixed(2)})</option>
+                      </select>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={selectedTourney.status !== 'REGISTRATION_OPEN'}
+                      className="w-full py-4 bg-[var(--accent)] hover:bg-opacity-90 text-white font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-lg shadow-lg"
+                    >
+                      {selectedTourney.status === 'REGISTRATION_OPEN' ? `Inscribir Escuadra ($${selectedTourney.entryFeeUsd.toFixed(2)})` : 'Inscripciones Cerradas'}
+                    </button>
+                  </form>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === 'LEADERBOARD' && (
+              <motion.div
+                key="leaderboard"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+              >
+                {isSoccer ? (
+                  /* ⚽ TABLA DE POSICIONES FÚTBOL / LIGA FC 24 */
+                  <div>
+                    <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <Trophy className="w-6 h-6 text-emerald-400 shrink-0" />
+                        <div>
+                          <h4 className="font-bold text-emerald-400">Tabla de Clasificación Oficial — EA Sports FC 24</h4>
+                          <p className="text-sm text-[var(--text-secondary)]">
+                            Regla oficial: Victoria = 3 Pts | Empate = 1 Pt | Derrota = 0 Pts. Desempate: Diferencia de Goles (DG) y Goles a Favor (GF).
+                          </p>
+                        </div>
+                      </div>
+                      <div className="px-3 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold whitespace-nowrap">
+                        👟 Bota de Oro: $10.00 al Goleador
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto rounded-xl border border-[var(--border-default)]">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-[var(--bg-primary)] border-b border-[var(--border-default)] text-[var(--text-secondary)] text-xs uppercase tracking-wider">
+                            <th className="p-3.5 font-semibold w-12 text-center">#</th>
+                            <th className="p-3.5 font-semibold">Jugador / EA ID</th>
+                            <th className="p-3.5 font-semibold">Club Elegido</th>
+                            <th className="p-3.5 font-semibold text-center">PJ</th>
+                            <th className="p-3.5 font-semibold text-center">PG</th>
+                            <th className="p-3.5 font-semibold text-center">PE</th>
+                            <th className="p-3.5 font-semibold text-center">PP</th>
+                            <th className="p-3.5 font-semibold text-center">GF</th>
+                            <th className="p-3.5 font-semibold text-center">GC</th>
+                            <th className="p-3.5 font-semibold text-center">DG</th>
+                            <th className="p-3.5 font-semibold text-center font-bold text-[var(--text-primary)]">Pts</th>
+                            <th className="p-3.5 font-semibold text-right">Premio</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--border-default)] text-sm">
+                          {MOCK_SOCCER_LEADERBOARD.map((team, index) => (
+                            <tr key={team.player} className={`hover:bg-[var(--bg-primary)]/50 transition-colors ${index < 3 ? 'bg-emerald-500/5' : ''}`}>
+                              <td className="p-3.5 font-mono font-bold text-center text-[var(--text-secondary)]">
+                                {index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : `${index + 1}`}
+                              </td>
+                              <td className="p-3.5 font-bold flex items-center gap-2">
+                                <span>{team.player}</span>
+                                {team.isTopScorer && (
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-yellow-500/20 text-yellow-400 font-semibold border border-yellow-500/30 flex items-center gap-1">
+                                    👟 Bota de Oro
+                                  </span>
+                                )}
+                              </td>
+                              <td className="p-3.5 text-[var(--text-secondary)]">{team.club}</td>
+                              <td className="p-3.5 text-center font-mono">{team.pj}</td>
+                              <td className="p-3.5 text-center font-mono text-emerald-400 font-bold">{team.pg}</td>
+                              <td className="p-3.5 text-center font-mono text-[var(--text-secondary)]">{team.pe}</td>
+                              <td className="p-3.5 text-center font-mono text-rose-400">{team.pp}</td>
+                              <td className="p-3.5 text-center font-mono font-bold text-emerald-300">{team.gf}</td>
+                              <td className="p-3.5 text-center font-mono text-zinc-400">{team.gc}</td>
+                              <td className="p-3.5 text-center font-mono font-semibold">{team.dg}</td>
+                              <td className="p-3.5 text-center font-mono font-black text-base text-[var(--accent)]">{team.pts}</td>
+                              <td className="p-3.5 text-right font-bold text-green-400">
+                                {team.earnings > 0 ? `$${team.earnings.toFixed(2)}` : '—'}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                ) : (
+                  /* 💥 TABLA DE POSICIONES BATTLE ROYALE / KILLS */
+                  <div>
+                    <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <Target className="w-6 h-6 text-yellow-400" />
+                        <div>
+                          <h4 className="font-bold text-yellow-400">Sistema de $1.00 por Kill Activo</h4>
+                          <p className="text-sm text-[var(--text-secondary)]">Las ganancias se calculan sumando el premio por posición + ($1.00 × Kills)</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="overflow-x-auto rounded-xl border border-[var(--border-default)]">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-[var(--bg-primary)] border-b border-[var(--border-default)] text-[var(--text-secondary)] text-sm">
+                            <th className="p-4 font-semibold w-16">#</th>
+                            <th className="p-4 font-semibold">Escuadra</th>
+                            <th className="p-4 font-semibold text-center">Pts Posición</th>
+                            <th className="p-4 font-semibold text-center">Kills</th>
+                            <th className="p-4 font-semibold text-center">Total Pts</th>
+                            <th className="p-4 font-semibold text-right">Ganancia</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-[var(--border-default)]">
+                          {MOCK_LEADERBOARD
+                            .map(t => ({ ...t, totalPts: t.placementPts + t.kills }))
+                            .sort((a, b) => b.totalPts - a.totalPts)
+                            .map((team, index) => {
+                              const positionPrize = selectedTourney.prizes.find(p => p.position === team.position)?.amountUsd || 0;
+                              const killEarnings = team.kills * selectedTourney.prizePerKillUsd;
+                              const totalEarnings = positionPrize + killEarnings;
+                              
+                              return (
+                                <tr key={team.team} className={`hover:bg-[var(--bg-primary)]/50 transition-colors ${index < 3 ? 'bg-yellow-500/5' : ''}`}>
+                                  <td className="p-4 font-mono font-bold text-[var(--text-secondary)]">
+                                    {index + 1 === 1 ? '🥇' : index + 1 === 2 ? '🥈' : index + 1 === 3 ? '🥉' : `${index + 1}`}
+                                  </td>
+                                  <td className="p-4 font-bold">{team.team}</td>
+                                  <td className="p-4 text-center font-mono">{team.placementPts}</td>
+                                  <td className="p-4 text-center font-mono text-yellow-400 font-bold">{team.kills}</td>
+                                  <td className="p-4 text-center font-mono font-bold">{team.totalPts}</td>
+                                  <td className="p-4 text-right font-bold text-green-400">${totalEarnings.toFixed(2)}</td>
+                                </tr>
+                              );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
+
+            {activeTab === 'ROOM' && isRegistered && (
+              <motion.div
+                key="room"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="space-y-6"
+              >
+                <div className="bg-[var(--accent)]/10 border border-[var(--accent)]/30 rounded-2xl p-6 text-center">
+                  <h3 className="text-xl font-bold mb-2">Credenciales de la Sala</h3>
+                  <p className="text-[var(--text-secondary)] text-sm mb-6">Por favor, no compartas estos datos con nadie externo a tu escuadra.</p>
+                  
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <div className="bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-default)] flex-1 max-w-xs relative group">
+                      <div className="text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-1">ID de Sala</div>
+                      <div className="text-2xl font-mono font-bold tracking-widest">{selectedTourney.roomCredentials?.roomId}</div>
+                      <button 
+                        onClick={() => handleCopy(selectedTourney.roomCredentials?.roomId || '')}
+                        className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        <Copy className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="bg-[var(--bg-primary)] p-4 rounded-xl border border-[var(--border-default)] flex-1 max-w-xs relative group">
+                      <div className="text-xs text-[var(--text-secondary)] uppercase tracking-wider mb-1">Contraseña</div>
+                      <div className="text-2xl font-mono font-bold tracking-widest">{selectedTourney.roomCredentials?.password}</div>
+                      <button 
+                        onClick={() => handleCopy(selectedTourney.roomCredentials?.password || '')}
+                        className="absolute top-4 right-4 text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors opacity-0 group-hover:opacity-100"
+                      >
+                        <Copy className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="mt-6 inline-flex items-center gap-2 px-4 py-2 bg-[var(--bg-primary)] rounded-full text-sm font-semibold border border-[var(--border-default)]">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    Servidor: {selectedTourney.roomCredentials?.server}
+                  </div>
                 </div>
 
-                <div className="pt-4 flex items-center justify-between border-t border-[var(--border-color)]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      setCurrentStep(3);
-                    }}
-                    className="px-5 py-3 rounded-2xl bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] font-bold text-xs flex items-center gap-1.5"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span>Ver Sala de Juego</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      sound.playClick();
-                      setCurrentStep(1);
-                    }}
-                    className="px-6 py-3.5 rounded-2xl bg-[#a78bfa] text-[#09090b] font-bold text-xs shadow-lg hover:bg-[#c4b5fd] transition-all flex items-center gap-2 cursor-pointer"
-                  >
-                    <span>Inscribir en Otro Torneo</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
+                <div className="bg-[var(--bg-primary)] border border-[var(--border-default)] rounded-xl p-5">
+                  <h4 className="font-bold mb-3 flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-[var(--text-secondary)]" /> Cronograma del Match
+                  </h4>
+                  <ul className="space-y-3 text-sm text-[var(--text-secondary)]">
+                    <li className="flex justify-between items-center pb-3 border-b border-[var(--border-default)]">
+                      <span>Creación de sala</span>
+                      <span className="font-mono">{new Date(new Date(selectedTourney.scheduledAt).getTime() - 15*60000).toLocaleTimeString('es-VE', {hour: '2-digit', minute:'2-digit'})}</span>
+                    </li>
+                    <li className="flex justify-between items-center pb-3 border-b border-[var(--border-default)]">
+                      <span>Inicio del juego (Estricto)</span>
+                      <span className="font-mono text-[var(--text-primary)] font-bold">{new Date(selectedTourney.scheduledAt).toLocaleTimeString('es-VE', {hour: '2-digit', minute:'2-digit'})}</span>
+                    </li>
+                    <li className="flex justify-between items-center">
+                      <span>Reporte de resultados máximo</span>
+                      <span className="font-mono">{new Date(new Date(selectedTourney.scheduledAt).getTime() + 45*60000).toLocaleTimeString('es-VE', {hour: '2-digit', minute:'2-digit'})}</span>
+                    </li>
+                  </ul>
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

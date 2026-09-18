@@ -1,0 +1,4 @@
+<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
+    <path d="M80,38 Q85,30 92,30 Q90,38 83,41 M75,44 Q80,44 85,46 Q92,44 97,48 Q95,65 85,78 Q80,85 75,85 Q70,85 66,78 Q58,68 62,54 Q65,44 75,44 Z" fill="#FFFFFF"/>
+    <text x="120" y="72" font-family="'Arial Black', sans-serif" font-size="40" fill="#FFFFFF">Apple Card</text>
+  </svg>
