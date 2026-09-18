@@ -6,12 +6,12 @@
 ![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.1-38B2AC?style=for-the-badge&logo=tailwind-css)
 ![Motion](https://img.shields.io/badge/Motion-v12.23-black?style=for-the-badge&logo=framer)
-![Vite](https://img.shields.io/badge/Vite-6.2-646CFF?style=for-the-badge&logo=vite)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL_16-3ECF8E?style=for-the-badge&logo=supabase)
 ![DolarApi](https://img.shields.io/badge/DolarApi-Live_VE-34D399?style=for-the-badge)
 
-**Plataforma de alta velocidad para recargas de videojuegos, billeteras virtuales y torneos esports en Venezuela y Latinoamérica.**
+**Plataforma de alta velocidad para recargas de videojuegos, billeteras digitales y torneos esports en Venezuela y Latinoamérica.**
 
-[Características](#-características-principales) • [Arquitectura](#-arquitectura-del-sistema) • [Modelo Financiero](#-modelo-financiero-y-tasas) • [Instalación](#-instalación-y-ejecución) • [Documentación](#-documentación-para-desarrolladores)
+[Características](#-características-principales) • [Arquitectura](#-arquitectura-del-sistema) • [Activos y Marcas 2026](#-catálogo-de-marcas-y-activos-2026) • [Instalación](#-instalación-y-ejecución) • [Documentación](#-documentación-maestra)
 
 </div>
 
@@ -19,39 +19,42 @@
 
 ## 🎮 Resumen del Proyecto
 
-En Venezuela y diversas regiones de Latinoamérica, la gran mayoría de los jugadores no disponen de tarjetas de crédito internacionales para comprar diamantes, pases de batalla o recargar plataformas como Zinli o Steam. 
+En Venezuela y América Latina, la gran mayoría de los jugadores no disponen de tarjetas de crédito internacionales para comprar diamantes, pases de batalla o recargar plataformas como Zinli, Steam o PlayStation.
 
-**Nexus Recharge** resuelve este problema permitiendo a cualquier persona adquirir artículos oficiales de sus videojuegos favoritos pagando en **Bolívares (Pago Móvil BDV, Banesco, Mercantil)** o en **Criptomonedas (Binance Pay USDT)** con despacho directo por UID numérico en menos de 1.8 segundos, **sin contraseñas y sin requerir APIs empresariales costosas**.
+**Nexus Recharge** resuelve este problema permitiendo a cualquier persona adquirir artículos oficiales de sus videojuegos y servicios favoritos pagando en **Bolívares (Pago Móvil BDV, Banesco, Mercantil)** o en **Criptomonedas (Binance Pay USDT)** con despacho directo por UID o E-PIN en menos de 1.8 segundos, **sin contraseñas y con conciliación transparente**.
 
 ---
 
 ## ✨ Características Principales
 
-### 1. 🧭 Navegación Modular por Pantallas con Transiciones Motion
-- **Sin scroll infinito desordenado:** La aplicación opera como una SPA moderna estructurada en módulos independientes con transiciones fluidas de `motion/react`.
-- **Módulos integrados:**
-  - ⚡ **Inicio (`home`):** Hero cinemático con banners interactivos de juegos destacados y catálogo visual.
-  - 💎 **Asistente de Recarga Guiado (`recharge`):** Stepper visual de 4 etapas:
-    1. Selección de Videojuego o Servicio (con portadas HD y publisher tags).
-    2. Validación de Jugador / UID (con avatar, ping y pre-flight check anti-error).
-    3. Catálogo de Artículos Oficiales (Diamantes, Pase Booyah, Battle Pass, Emotes & Skins).
-    4. Liquidación y Voucher con copiado rápido de datos bancarios.
-  - 💳 **Billeteras Digitales & Gift Cards (`wallets`):** Tarjeta Visa virtual interactiva **Zinli (Panamá)** con chip y contactless, Binance Pay, Steam Wallet USD y Shein.
-  - 🏆 **Nexus Arena Esports (`tournaments`):** Hub competitivo de 4 pasos con inscripción de escuadra, conector de salas de juego oficiales (**Custom Room ID + Password**) y brackets actualizados en vivo.
-  - 📊 **Monitor de Divisas en Tiempo Real (`rates`):** Tablero sincronizado con `DolarApi` (BCV Oficial, USDT Binance P2P, Euro) y Simulador de Margen Protegido.
-  - 🔍 **Rastreador de Órdenes (`tracking`):** Búsqueda instantánea de pedidos por ID o número de referencia.
+### 1. 🌌 Motor de Iluminación Ambiental Reactiva y Breathing GPU
+- **Atmósfera Dinámica:** Tres orbes luminosos acelerados por hardware en ciclo continuo sinusoidal (9s, 12s, 10s) que mutan su colorimetría inmediatamente al color oficial de la marca (`--brand-current` y `--brand-glow`) cuando el usuario pasa el cursor o selecciona un juego.
+- **Scroll Parallax:** Parallax fluido vinculado al scroll vertical mediante hooks de Motion sin lag de CPU.
+- **Láser Superior Neón:** Rayo horizontal que proyecta un halo luminoso de 350px con el color activo de la marca.
 
-### 2. 📈 Sincronización en Vivo con DolarApi y Motor de Margen Protegido
-- **Conexión en Vivo:** Sincronización automática con `https://ve.dolarapi.com/v1/dolares` y `https://ve.dolarapi.com/v1/euros`.
-- **Protección Antidevaluación:** Los precios en Bolívares se calculan en base a la tasa de reposición de USDT en Binance P2P más un margen comercial configurable (5% a 40%), evitando que el negocio opere a pérdida por la brecha entre la tasa oficial BCV y la del mercado.
+### 2. 📱 Identidad Visual Oficial 2026 con iOS Squircles
+- **18 Marcas Oficiales:** Iconografía procesada con curvatura de super-elipse de Apple (`rounded-[22%]`), marco especular de cristal y sombras de profundidad.
+- **Key-Art Covers 2026:** Portadas oficiales en alta resolución (Free Fire 2026, EA Sports FC 26 Mobile, PUBG Mobile Erangel, Brawl Stars Starr Park, Spotify, Netflix, Zinli USD Visa Card, etc.).
+- **Zinli Brand Identity:** Color oficial Violeta Iris Real (`#672fbf`) y Menta Eléctrico (`#00c9b7`), acompañado de una **Tarjeta Visa Internacional Virtual interactiva en vivo**.
 
-### 3. 🛡️ Pre-Flight Check Anti-Error (< 0.01% Error Rate)
-- Antes de emitir cualquier cobro, el sistema valida el UID del jugador y solicita confirmación expresa del Nickname y servidor para garantizar que los diamantes se envíen a la cuenta correcta.
+### 3. 🎯 Flujos de Recarga Especializados por Plataforma (Step 1)
+- **Free Fire:** UID + Selector obligatorio de región (`SAC`, `US`, `EU`).
+- **EA Sports FC 26 Mobile:** UID + Selector de plataforma (`FC Mobile`, `PlayStation`, `Xbox`, `PC`).
+- **Mobile Legends:** User ID + Server Zone ID de 4 dígitos.
+- **Brawl Stars:** Supercell Player Tag con `#`.
+- **Zinli Dólares Visa:** Correo Zinli + Nombre de titular con pre-visualización de tarjeta virtual.
+- **Suscripciones y Gift Cards:** Correo electrónico verificado para despacho instantáneo de código E-PIN.
 
-### 4. 🎨 Motor de Temas y Audio Procedural
-- **3 Modos de Color:** Modo Oscuro (Titanio gamer), Modo Claro (Clean Pro de alto contraste) y Modo Neón (Cyberpunk Glow).
-- **Web Audio API:** Efectos acústicos arcade sintetizados en código (sin archivos de audio externos pesados).
-- **Consola Secreta de Operadores:** Acceso exclusivo para administradores mediante el atajo de teclado `Ctrl + Shift + A`.
+### 4. 🏆 Nexus Arena Esports con Métricas Deportivas Reales
+- **EA Sports FC 26:** Copa 1v1 Ultimate Team con formato de goles en 90 min, tiempo extra y tanda de penales (sin kills inapropiadas para fútbol).
+- **Free Fire:** Batalla campal de 48 jugadores con puntuación oficial por posición y eliminaciones.
+- **Brawl Stars:** Competitivo 3v3 Atrapagemas (Bo3).
+
+### 5. 🗄️ Backend Supabase Cloud Integrado
+- **PostgreSQL en la nube:** URL `https://qiykiwhipbcvnyfqoyuz.supabase.co`.
+- **Autenticación Completa:** Email/Password y Google OAuth (`AuthModal.tsx`).
+- **Row Level Security (RLS):** Protección de órdenes, perfiles y transacciones.
+- **Consola de Operadores:** Acceso administrativo mediante el atajo de teclado `Ctrl + Shift + A`.
 
 ---
 
@@ -59,99 +62,89 @@ En Venezuela y diversas regiones de Latinoamérica, la gran mayoría de los juga
 
 ```
 nexus-recharge/
-├── AGENT_RULES.md               # Reglas estrictas de construcción y política de cero roturas
-├── OPERATIONS_BLUEPRINT.md      # Modelo de negocio, márgenes y método operativo sin APIs
-├── PROJECT_INDEX.md             # Mapa maestro del repositorio para futuros desarrolladores
-├── README.md                    # Este archivo
-├── package.json                 # Dependencias y scripts
-├── tsconfig.json                # Configuración de compilador TypeScript
-├── vite.config.ts               # Plugins de Vite (React + Tailwind v4)
+├── AGENT_RULES.md                    # Reglas operativas estrictas para agentes de IA
+├── BACKEND_AUTOMATIONS_AND_COSTS.md  # Blueprint financiero, presupuestos, APIs y daemon workers
+├── OPERATIONS_BLUEPRINT.md           # Modelo comercial, márgenes y mitigación de devaluación
+├── PROJECT_INDEX.md                  # Índice maestro y especificación técnica completa
+├── README.md                         # Este archivo
+├── supabase_schema.sql               # Esquema completo de Supabase PostgreSQL
+├── public/assets/
+│   ├── logos/                        # 18 logos oficiales iOS Squircle 512x512
+│   ├── games/                        # 18 portadas oficiales Key-Art 2026
+│   └── banners/                      # Banners cinematográficos Ultra HD
 └── src/
-    ├── App.tsx                  # Enrutador multi-pantalla SPA con transiciones Motion
-    ├── main.tsx                 # Entrada React 19 con ThemeProvider y CurrencyProvider
-    ├── index.css                # Estilos globales Tailwind v4 y modos de color
-    ├── types.ts                 # Contratos TypeScript (Juegos, Órdenes, Torneos)
-    ├── services/
-    │   └── currencyService.ts   # Conexión con DolarApi Venezuela y motor de cálculo
-    ├── context/
-    │   ├── ThemeContext.tsx     # Proveedor de temas: Dark, Light y Neón
-    │   └── CurrencyContext.tsx  # Proveedor de cotizaciones y margen protegido
-    ├── components/
-    │   ├── Header.tsx           # Barra superior: navegación modular, saldo y temas
-    │   ├── DynamicIsland.tsx    # Notificaciones flotantes de estado del sistema
-    │   ├── Hero.tsx             # Sección inicial con banners VIP dinámicos
-    │   ├── StepRechargeWizard.tsx # Flujo guiado de recargas por etapas
-    │   ├── InteractiveTournamentHub.tsx # Hub de torneos, salas y brackets
-    │   ├── LiveRateDashboard.tsx# Monitor de divisas y simulador de margen
-    │   ├── ZinliWalletSection.tsx # Tarjeta Visa Zinli, Steam y Shein
-    │   ├── OrderSearchSection.tsx # Rastreador de órdenes en vivo
-    │   ├── GameCatalog.tsx      # Catálogo con portadas HD y publisher tags
-    │   ├── PaymentModal.tsx     # Modal de liquidación con datos Pago Móvil / Binance
-    │   ├── OrderTrackingModal.tsx # Voucher de acreditación en 1.8 segundos
-    │   ├── AdminConsoleModal.tsx# Consola interna de operadores (Ctrl+Shift+A)
-    │   └── NexusBotWidget.tsx   # Asistente virtual flotante
-    ├── data/
-    │   └── mockData.ts          # Datos maestros de videojuegos, paquetes y torneos
-    └── utils/
-        └── audio.ts             # Sintetizador procedural con Web Audio API
+    ├── App.tsx                       # Orquestador SPA con motor de iluminación ambiental
+    ├── components/                   # 27 componentes modulares (Catalog, Detail, Tournaments, etc.)
+    ├── context/                      # AuthContext (Supabase), CurrencyContext (DolarApi), ThemeContext
+    ├── services/                     # supabase.ts, currencyService.ts
+    ├── data/mockData.ts              # Catálogo maestro de 18 productos, paquetes y torneos
+    └── utils/audio.ts                # Sintetizador procedural con Web Audio API
 ```
 
 ---
 
-## 💰 Modelo Financiero y Tasas
+## 🎨 Catálogo de Marcas y Activos 2026
 
-| Denominación / Servicio | Costo Reposición (USDT) | Margen Neto | Vía de Despacho |
-| :--- | :--- | :--- | :--- |
-| **Micro-recargas (100 - 310 💎)** | $0.85 - $2.70 | **22% - 30%** | E-PIN Pagostore al mayor |
-| **Pase Booyah / Battle Pass** | $4.20 - $4.99 | **16% - 20%** | Inyección directa UID |
-| **Combos Doble Recarga (1060 💎)** | $8.00 - $9.40 | **14% - 18%** | Lote mayorista Garena SAC |
-| **Zinli Visa ($10.00 USD)** | $10.00 | **6% - 10%** | Transferencia P2P en app (0% red) |
-| **Torneos Esports** | Variable por pozo | **15% - 25%** | Comisión retenida por pozo |
+| Plataforma / Juego | Categoría | Color Primario | Glow RGBA | Icono iOS | Portada Key-Art |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Garena Free Fire** | Battle Royale | `#ff5500` | `rgba(255, 85, 0, 0.45)` | `/assets/logos/free-fire.png` | `/assets/games/free-fire.jpg` |
+| **EA Sports FC 26 Mobile** | Fútbol / Esports | `#00ff87` | `rgba(0, 255, 135, 0.50)` | `/assets/logos/fc-26.png` | `/assets/games/fc-26.jpg` |
+| **Zinli Dólares Visa** | Billetera Digital | `#672fbf` | `rgba(103, 47, 191, 0.55)` | `/assets/logos/zinli.png` | `/assets/games/zinli.jpg` |
+| **PUBG Mobile** | Battle Royale | `#f59e0b` | `rgba(245, 158, 11, 0.45)` | `/assets/logos/pubg-mobile.png` | `/assets/games/pubg-mobile.jpg` |
+| **Brawl Stars** | Acción Supercell | `#facc15` | `rgba(250, 204, 21, 0.45)` | `/assets/logos/brawl-stars.png` | `/assets/games/brawl-stars.jpg` |
+| **Spotify Premium** | Streaming | `#1ed760` | `rgba(30, 215, 96, 0.45)` | `/assets/logos/spotify.png` | `/assets/games/spotify.jpg` |
+| **Netflix** | Streaming | `#e50914` | `rgba(229, 9, 20, 0.45)` | `/assets/logos/netflix.png` | `/assets/games/netflix.jpg` |
+| **Roblox** | Sandbox | `#e11d48` | `rgba(225, 29, 72, 0.45)` | `/assets/logos/roblox.png` | `/assets/games/roblox.jpg` |
+| **Valorant** | FPS PC | `#ff4655` | `rgba(255, 70, 85, 0.45)` | `/assets/logos/valorant.png` | `/assets/games/valorant.jpg` |
+| **Mobile Legends** | MOBA 5v5 | `#38bdf8` | `rgba(56, 189, 248, 0.45)` | `/assets/logos/mobile-legends.png` | `/assets/games/mobile-legends.jpg` |
+| **Call of Duty: Mobile** | FPS Móvil | `#eab308` | `rgba(234, 179, 8, 0.45)` | `/assets/logos/cod-mobile.png` | `/assets/games/cod-mobile.jpg` |
+| **Steam Wallet USD** | Gift Card | `#1a9fff` | `rgba(26, 159, 255, 0.45)` | `/assets/logos/steam.png` | `/assets/games/steam.jpg` |
+| **PlayStation Network** | Gift Card | `#0070d1` | `rgba(0, 112, 209, 0.45)` | `/assets/logos/playstation.png` | `/assets/games/playstation.jpg` |
+| **Xbox Game Pass** | Suscripción | `#107c10` | `rgba(16, 124, 16, 0.45)` | `/assets/logos/xbox.png` | `/assets/games/xbox.jpg` |
+| **Google Play Store** | Gift Card | `#01875f` | `rgba(1, 135, 95, 0.45)` | `/assets/logos/google-play.png` | `/assets/games/google-play.jpg` |
+| **Apple Gift Card** | Gift Card | `#0071e3` | `rgba(0, 113, 227, 0.45)` | `/assets/logos/apple.png` | `/assets/games/apple.jpg` |
+| **Discord Nitro** | App / Social | `#5865f2` | `rgba(88, 101, 242, 0.45)` | `/assets/logos/discord-nitro.png` | `/assets/games/discord-nitro.jpg` |
+| **Shein Moda** | Gift Card | `#f43f5e` | `rgba(244, 63, 94, 0.45)` | `/assets/logos/shein.png` | `/assets/games/shein.jpg` |
 
 ---
 
 ## 🚀 Instalación y Ejecución
 
 ### Prerrequisitos
-- [Node.js](https://nodejs.org/) v18 o superior
-- [npm](https://www.npmjs.com/) v9 o superior
+- [Node.js](https://nodejs.org/) v18+
+- [npm](https://www.npmjs.com/) v9+
 
 ### Pasos
-1. **Clonar o descargar el repositorio:**
-   ```bash
-   git clone https://github.com/kaddexomg/nexus.git
-   cd nexus
-   ```
+```bash
+# 1. Clonar el repositorio
+git clone https://github.com/kaddexomg/nexus.git
+cd nexus
 
-2. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
+# 2. Instalar dependencias
+npm install
 
-3. **Ejecutar en modo de desarrollo:**
-   ```bash
-   npm run dev
-   ```
-   La plataforma estará disponible en: `http://localhost:3000/`
+# 3. Iniciar servidor de desarrollo
+npm run dev
 
-4. **Verificar tipado y compilar para producción:**
-   ```bash
-   npx tsc --noEmit
-   npm run build
-   ```
+# 4. Verificar tipado estricto
+npx tsc --noEmit
+
+# 5. Compilar para producción
+npm run build
+```
 
 ---
 
-## 📚 Documentación para Desarrolladores
+## 📚 Documentación Maestra
 
-Para comprender a fondo la lógica operativa y de negocio, consulta los documentos de inducción en la raíz del proyecto:
-
-* 📄 [**`PROJECT_INDEX.md`**](PROJECT_INDEX.md): Inducción completa, contratos de datos y arquitectura detallada.
-* 🛡️ [**`AGENT_RULES.md`**](AGENT_RULES.md): Reglas inquebrantables de desarrollo y política de cero roturas.
-* 💼 [**`OPERATIONS_BLUEPRINT.md`**](OPERATIONS_BLUEPRINT.md): Guía de abastecimiento al mayor, mitigación de devaluación y protocolos anti-fraude.
+* 📄 [**`PROJECT_INDEX.md`**](PROJECT_INDEX.md): Índice maestro, especificaciones de arquitectura, contratos y activos.
+* ⚙️ [**`BACKEND_AUTOMATIONS_AND_COSTS.md`**](BACKEND_AUTOMATIONS_AND_COSTS.md): Guía de automatización, APIs, daemons y presupuestos de operación.
+* 🛡️ [**`AGENT_RULES.md`**](AGENT_RULES.md): Reglas inquebrantables de desarrollo y preservación del sistema.
+* 💼 [**`OPERATIONS_BLUEPRINT.md`**](OPERATIONS_BLUEPRINT.md): Protocolos operativos, mitigación cambiaria y conciliación bancaria.
+* 🗄️ [**`supabase_schema.sql`**](supabase_schema.sql): Esquema SQL de base de datos con políticas RLS y triggers automáticos.
 
 ---
 
 <div align="center">
-Desarrollado con ❤️ para la comunidad gamer de Venezuela y América Latina.
+Desarrollado para la comunidad gamer de Venezuela y América Latina.
 </div>
