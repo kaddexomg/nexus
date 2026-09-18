@@ -1,4 +1,6 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <polygon points="60,30 110,30 85,90" fill="#10B981" />
-    <text x="130" y="78" font-family="'Arial Black', sans-serif" font-weight="900" font-size="56" fill="#FFFFFF" letter-spacing="4">FC 24</text>
+<svg viewBox="0 0 380 100" xmlns="http://www.w3.org/2000/svg">
+    <g filter="drop-shadow(0 4px 8px rgba(0,0,0,0.9))">
+      <polygon points="35,20 85,20 60,82" fill="#00FF87"/>
+      <text x="110" y="72" font-family="'Arial Black', sans-serif" font-weight="900" font-size="56" fill="#FFFFFF" letter-spacing="4">FC 24</text>
+    </g>
   </svg>

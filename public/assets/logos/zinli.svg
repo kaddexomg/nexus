@@ -1,5 +1,13 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <rect x="50" y="32" width="70" height="56" rx="10" fill="#7C3AED"/>
-    <circle cx="85" cy="60" r="16" fill="#FBBF24"/>
-    <text x="145" y="74" font-family="'Arial Black', sans-serif" font-weight="900" font-size="50" fill="#FFFFFF" letter-spacing="3">zinli</text>
+<svg viewBox="0 0 360 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="zinliGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#6C5CE7"/>
+        <stop offset="100%" stop-color="#A29BFE"/>
+      </linearGradient>
+    </defs>
+    <g filter="drop-shadow(0 4px 8px rgba(0,0,0,0.9))">
+      <rect x="25" y="20" width="60" height="60" rx="16" fill="url(#zinliGrad)"/>
+      <path d="M42,36 L68,36 L48,64 L70,64" stroke="#FFFFFF" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="105" y="65" font-family="'Arial Black', sans-serif" font-weight="900" font-size="48" fill="#FFFFFF" letter-spacing="2">Zinli</text>
+    </g>
   </svg>

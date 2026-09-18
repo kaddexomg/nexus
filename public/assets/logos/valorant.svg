@@ -1,5 +1,12 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <path d="M70 25 L120 25 L95 85 L70 25 Z" fill="#FF4655"/>
-    <path d="M130 25 L145 25 L115 95 L90 95 Z" fill="#FF4655"/>
-    <text x="170" y="78" font-family="'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="8">VALORANT</text>
+<svg viewBox="0 0 420 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="valShadow">
+        <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#000" flood-opacity="0.9"/>
+      </filter>
+    </defs>
+    <g filter="url(#valShadow)">
+      <polygon points="35,22 80,22 55,80 35,22" fill="#FF4655"/>
+      <polygon points="90,22 105,22 78,85 63,85" fill="#FF4655"/>
+      <text x="135" y="74" font-family="'Arial Black', sans-serif" font-weight="900" font-size="54" fill="#FFFFFF" letter-spacing="8">VALORANT</text>
+    </g>
   </svg>

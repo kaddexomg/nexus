@@ -1,4 +1,13 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <text x="50%" y="60%" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="44" fill="#E2E8F0" letter-spacing="3">MOBILE LEGENDS</text>
-    <text x="50%" y="85%" text-anchor="middle" font-family="'Arial', sans-serif" font-weight="800" font-size="20" fill="#F6AD55" letter-spacing="6">BANG BANG</text>
+<svg viewBox="0 0 500 110" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="mlGold" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFE259"/>
+        <stop offset="100%" stop-color="#FFA751"/>
+      </linearGradient>
+    </defs>
+    <g filter="drop-shadow(0 4px 8px rgba(0,0,0,0.9))">
+      <path d="M40,25 L70,15 L95,45 L70,85 L40,65 Z" fill="url(#mlGold)" stroke="#FFF" stroke-width="2"/>
+      <text x="270" y="55" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="38" fill="#FFFFFF" letter-spacing="3">MOBILE LEGENDS</text>
+      <text x="270" y="90" text-anchor="middle" font-family="'Impact', sans-serif" font-size="28" fill="url(#mlGold)" letter-spacing="8">BANG BANG</text>
+    </g>
   </svg>

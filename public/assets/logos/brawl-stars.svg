@@ -1,4 +1,13 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <text x="50%" y="56%" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="44" fill="#FBBF24" stroke="#000" stroke-width="2">BRAWL</text>
-    <text x="50%" y="94%" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="44" fill="#FBBF24" stroke="#000" stroke-width="2">STARS</text>
+<svg viewBox="0 0 420 110" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="bsYellow" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FFF200"/>
+        <stop offset="100%" stop-color="#F39C12"/>
+      </linearGradient>
+    </defs>
+    <g filter="drop-shadow(0 4px 8px rgba(0,0,0,0.9))">
+      <polygon points="65,15 80,45 110,48 85,70 95,100 65,82 35,100 45,70 20,48 50,45" fill="url(#bsYellow)" stroke="#000" stroke-width="3"/>
+      <text x="260" y="55" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="40" fill="url(#bsYellow)" stroke="#000" stroke-width="2">BRAWL</text>
+      <text x="260" y="94" text-anchor="middle" font-family="'Arial Black', sans-serif" font-weight="900" font-size="40" fill="#FFFFFF" stroke="#000" stroke-width="2">STARS</text>
+    </g>
   </svg>

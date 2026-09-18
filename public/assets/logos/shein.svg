@@ -1,3 +1,5 @@
-<svg viewBox="0 0 500 120" xmlns="http://www.w3.org/2000/svg">
-    <text x="50%" y="76%" text-anchor="middle" font-family="'Impact', sans-serif" font-size="62" fill="#FFFFFF" letter-spacing="12">SHEIN</text>
-  </svg>
+<svg viewBox="0 0 350 90" xmlns="http://www.w3.org/2000/svg">
+  <g filter="drop-shadow(0 3px 6px rgba(0,0,0,0.8))">
+    <text x="50%" y="65" text-anchor="middle" font-family="'Helvetica Neue', 'Arial Black', sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="12">SHEIN</text>
+  </g>
+</svg>
