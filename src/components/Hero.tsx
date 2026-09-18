@@ -25,7 +25,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       tagline: 'Nueva cápsula, pases de batalla y paquetes de VP al mejor precio de Venezuela.',
       highlights: ['Gun Buddies', 'Tarjetas Exclusivas', 'Pase de Batalla', 'Entrega por Riot ID'],
       bgImage: '/assets/banners/banner-valorant.jpg',
-      logoImage: '/assets/logos/valorant.svg',
+      logoImage: '/assets/logos/valorant.png',
       ctaText: 'Comprar VP Ahora',
     },
     {
@@ -35,7 +35,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       tagline: 'Recarga por ID numérico en segundos. Bonificaciones activas y paquetes dobles.',
       highlights: ['Diamantes Dobles', 'Pase Booyah', 'Emotes Épicos', 'Sin Contraseñas'],
       bgImage: '/assets/banners/banner-freefire.jpg',
-      logoImage: '/assets/logos/free-fire.svg',
+      logoImage: '/assets/logos/free-fire.png',
       ctaText: 'Recargar Diamantes',
     },
     {
@@ -45,7 +45,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       tagline: 'Puntos FC para tus sobres Ultimate Team y torneos de fútbol con premios en USDT.',
       highlights: ['Sobres Promo', 'FC Points', 'Torneo 1v1', 'Premios en $'],
       bgImage: '/assets/banners/banner-fc26.jpg',
-      logoImage: '/assets/logos/fc-26.svg',
+      logoImage: '/assets/logos/fc-26.png',
       ctaText: 'Ver Puntos & Torneo',
     },
     {
@@ -55,7 +55,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       tagline: 'Pases Starlight, skins legendarias y diamantes con entrega directa por ID y Server.',
       highlights: ['Starlight Pass', 'Verificación de Nickname', 'Diamantes Promo', 'Entrega 24/7'],
       bgImage: '/assets/banners/banner-mlbb.jpg',
-      logoImage: '/assets/logos/mobile-legends.svg',
+      logoImage: '/assets/logos/mobile-legends.png',
       ctaText: 'Recargar MLBB',
     },
     {
@@ -65,7 +65,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
       tagline: 'Recarga saldo en dólares en tu tarjeta Visa Zinli y tarjetas Steam pagando en Bolívares.',
       highlights: ['Tarjeta Visa Internacional', 'Steam Wallet USD', 'Pago Móvil BDV', 'Cero Comisiones'],
       bgImage: '/assets/banners/banner-wallets.jpg',
-      logoImage: '/assets/logos/zinli.svg',
+      logoImage: '/assets/logos/zinli.png',
       ctaText: 'Recargar Billetera',
     },
   ];
@@ -135,7 +135,7 @@ export const Hero: React.FC<HeroProps> = ({ onScrollToTerminal }) => {
                     <img
                       src={currentBanner.logoImage}
                       alt={currentBanner.title}
-                      className="max-h-8 sm:max-h-12 max-w-[120px] object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] opacity-90"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-[22%] object-cover shadow-[0_4px_16px_rgba(0,0,0,0.8)] border border-white/20 opacity-95"
                     />
                   )}
                 </div>

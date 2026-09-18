@@ -75,7 +75,7 @@ export function TournamentSection({ onViewTournaments, onOpenCommunity }: Tourna
                 <img
                   src={game.logoImage}
                   alt={game.name}
-                  className="max-h-12 max-w-[90%] object-contain drop-shadow-[0_4px_12px_rgba(0,0,0,0.95)] group-hover:scale-105 transition-transform"
+                  className="w-12 h-12 rounded-[22%] object-cover drop-shadow-[0_6px_16px_rgba(0,0,0,0.95)] border border-white/20 group-hover:scale-110 transition-transform duration-300"
                 />
               ) : (
                 <h4 className="text-white text-sm md:text-base font-black leading-tight drop-shadow-md text-center">

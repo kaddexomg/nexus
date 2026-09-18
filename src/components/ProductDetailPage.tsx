@@ -473,31 +473,35 @@ export const ProductDetailPage: React.FC<ProductDetailPageProps> = ({
               </div>
 
               {/* Interactive Virtual Zinli Visa Card Preview */}
-              <div className="p-5 rounded-2xl bg-gradient-to-tr from-[#2e1065] via-[#581c87] to-[#7e22ce] text-white shadow-xl relative overflow-hidden border border-purple-400/30">
-                <div className="absolute -right-6 -top-6 w-32 h-32 bg-purple-400/20 rounded-full blur-2xl pointer-events-none" />
-                <div className="flex justify-between items-start mb-6">
+              <div className="p-6 rounded-3xl bg-gradient-to-tr from-[#00c9b7] via-[#672fbf] to-[#12002b] text-white shadow-[0_20px_50px_rgba(0,201,183,0.3)] relative overflow-hidden border border-white/20 select-none">
+                <div className="absolute -right-8 -top-8 w-44 h-44 bg-[#00c9b7]/25 rounded-full blur-2xl pointer-events-none" />
+                <div className="absolute -left-8 -bottom-8 w-44 h-44 bg-[#672fbf]/35 rounded-full blur-2xl pointer-events-none" />
+                
+                <div className="relative z-10 flex justify-between items-start mb-6">
                   <div className="flex items-center gap-2">
-                    <span className="text-2xl font-black tracking-tight text-white">zinli</span>
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-semibold uppercase tracking-wider">Visa Prepago USD</span>
+                    <span className="text-2xl font-black italic tracking-tighter text-white">zinli</span>
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold uppercase tracking-wider text-[#00c9b7] border border-white/10">Visa Prepago USD</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-black italic tracking-wider text-xl">VISA</span>
-                    <span className="block text-[8px] text-purple-200 uppercase font-mono">Débito Internacional</span>
+                    <span className="font-black italic tracking-wider text-2xl drop-shadow">VISA</span>
+                    <span className="block text-[8px] text-white/80 font-mono uppercase tracking-widest">Internacional</span>
                   </div>
                 </div>
-                <div className="font-mono text-sm sm:text-base tracking-[0.25em] text-purple-100 mb-5">
+
+                <div className="relative z-10 font-mono text-base tracking-[0.28em] text-white drop-shadow mb-6">
                   4213 •••• •••• {identifier ? identifier.slice(0, 4).toUpperCase() : '2026'}
                 </div>
-                <div className="flex justify-between items-end text-xs">
+
+                <div className="relative z-10 flex justify-between items-end text-xs border-t border-white/15 pt-3">
                   <div>
-                    <span className="text-[9px] uppercase text-purple-300 block font-semibold">Titular Autorizado</span>
-                    <span className="font-bold tracking-wide uppercase text-sm text-white">
+                    <span className="text-[9px] uppercase text-white/70 block font-bold tracking-wider">Titular Autorizado</span>
+                    <span className="font-black tracking-wide uppercase text-sm text-white drop-shadow">
                       {cardholderName.trim() || 'NOMBRE DEL TITULAR'}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[9px] uppercase text-purple-300 block font-semibold">Correo de Acreditación</span>
-                    <span className="font-mono text-xs text-purple-100">
+                    <span className="text-[9px] uppercase text-white/70 block font-bold tracking-wider">Correo Zinli</span>
+                    <span className="font-mono text-xs text-[#6ee7b7] font-bold">
                       {identifier.trim() || 'tu-correo@zinli.com'}
                     </span>
                   </div>

@@ -249,55 +249,92 @@ export default function App() {
   const orb3Y = useTransform(scrollY, [0, 2000], [0, 250]);
 
   return (
-    <div className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden transition-colors duration-300 relative">
-      {/* ═══ Dynamic Reactive Ambient Illumination ═══ */}
+    <div 
+      className="min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased overflow-x-hidden transition-colors duration-300 relative"
+      style={{
+        // @ts-ignore
+        '--brand-current': activeThemeColor,
+        '--brand-glow': activeGlowColor,
+      }}
+    >
+      {/* ═══ Dynamic Reactive Breathing Ambient Illumination Engine ═══ */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden transition-all duration-700">
-        {/* Dynamic morphing radial halo */}
+        {/* Dynamic morphing radial spotlight directly behind view */}
         <motion.div
           animate={{
-            background: `radial-gradient(ellipse 90% 60% at 50% -10%, ${activeThemeColor}22, transparent 75%)`,
+            background: `radial-gradient(ellipse 90% 65% at 50% -10%, ${activeThemeColor}35, transparent 75%)`,
           }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
           className="absolute inset-0"
         />
 
-        {/* Scroll-reactive floating luminous orb 1 (Left Top) */}
+        {/* Dynamic Horizontal Laser / Neon Ray across top banner */}
+        <motion.div
+          animate={{
+            backgroundColor: activeThemeColor,
+            opacity: activeGame ? 0.85 : 0.3,
+            boxShadow: `0 0 40px 10px ${activeGlowColor}`,
+          }}
+          transition={{ duration: 0.4 }}
+          className="absolute top-0 inset-x-0 h-[2px] transition-all"
+        />
+
+        {/* Fluid Breathing Luminous Orb 1 (Left Top / Hero focus) */}
         <motion.div
           style={{ y: orb1Y }}
           animate={{
             backgroundColor: activeThemeColor,
-            opacity: activeGame ? 0.22 : 0.08,
-            scale: activeGame ? 1.25 : 1,
+            opacity: activeGame ? 0.35 : 0.12,
+            scale: activeGame ? [1.25, 1.45, 1.25] : [1, 1.15, 1],
+            x: [0, 50, -40, 0],
           }}
-          transition={{ duration: 0.6 }}
-          className="absolute -top-36 -left-36 w-[550px] h-[550px] rounded-full blur-[140px]"
+          transition={{
+            backgroundColor: { duration: 0.35, ease: 'easeOut' },
+            opacity: { duration: 0.35 },
+            scale: { duration: 7, repeat: Infinity, ease: 'easeInOut' },
+            x: { duration: 11, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="absolute -top-36 -left-36 w-[620px] h-[620px] rounded-full blur-[140px] transform-gpu will-change-transform"
         />
 
-        {/* Scroll-reactive floating luminous orb 2 (Right Mid) */}
+        {/* Fluid Breathing Luminous Orb 2 (Right Mid / Catalog focus) */}
         <motion.div
           style={{ y: orb2Y }}
           animate={{
             backgroundColor: activeThemeColor,
-            opacity: activeGame ? 0.18 : 0.06,
-            scale: activeGame ? 1.2 : 1,
+            opacity: activeGame ? 0.30 : 0.10,
+            scale: activeGame ? [1.2, 1.42, 1.2] : [0.95, 1.12, 0.95],
+            y: [0, -60, 45, 0],
           }}
-          transition={{ duration: 0.7 }}
-          className="absolute top-1/3 -right-44 w-[500px] h-[500px] rounded-full blur-[150px]"
+          transition={{
+            backgroundColor: { duration: 0.35, ease: 'easeOut' },
+            opacity: { duration: 0.35 },
+            scale: { duration: 8, repeat: Infinity, ease: 'easeInOut' },
+            y: { duration: 13, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="absolute top-1/3 -right-44 w-[560px] h-[560px] rounded-full blur-[150px] transform-gpu will-change-transform"
         />
 
-        {/* Scroll-reactive floating luminous orb 3 (Bottom Center) */}
+        {/* Fluid Breathing Luminous Orb 3 (Bottom Center / Pulse Aura) */}
         <motion.div
           style={{ y: orb3Y }}
           animate={{
             backgroundColor: activeThemeColor,
-            opacity: activeGame ? 0.14 : 0.05,
+            opacity: activeGame ? 0.28 : 0.08,
+            scale: activeGame ? [1.1, 1.35, 1.1] : [0.9, 1.1, 0.9],
+            x: [0, -35, 30, 0],
           }}
-          transition={{ duration: 0.8 }}
-          className="absolute bottom-20 left-1/4 w-[420px] h-[420px] rounded-full blur-[130px]"
+          transition={{
+            backgroundColor: { duration: 0.35, ease: 'easeOut' },
+            opacity: { duration: 0.35 },
+            scale: { duration: 6, repeat: Infinity, ease: 'easeInOut' },
+            x: { duration: 10, repeat: Infinity, ease: 'easeInOut' },
+          }}
+          className="absolute bottom-16 left-1/3 w-[480px] h-[480px] rounded-full blur-[140px] transform-gpu will-change-transform"
         />
 
         {/* Cyber micro-grid layer */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35" />
       </div>
 
       {/* ═══ Sticky Header ═══ */}
